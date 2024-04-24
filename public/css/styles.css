@@ -3,6 +3,8 @@
   --primary-color: #538083;
   --highlight1: #e8871e;
   --highlight2: #8c271e;
+  --font-sans: "Poppins", Helvetica, Sans-Serif;
+  --font-clean: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 }
 
 /******* Change Box Model ***************/
@@ -10,6 +12,7 @@
 *:before,
 *:after {
   box-sizing: border-box;
+  font-family: var(--font-clean);
 }
 
 #home{
@@ -97,6 +100,7 @@ h1{
   margin: 0;
   padding: .1rem 0;
   font-size: clamp(.75rem, 2vw, 1.5rem);
+  font-family: var(--font-sans);
 }
 .feature-btn{
   position: absolute;
