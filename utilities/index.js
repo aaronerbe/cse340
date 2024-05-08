@@ -59,4 +59,16 @@ Util.buildClassificationGrid = async function(data){        //expects data array
     return grid
 }
 
+/* ****************************************
+ * Middleware For Handling Errors
+ * Wrap other function in this for 
+ * General Error Handling
+ **************************************** */
+Util.handleErrors = fn => (req, res, next) => Promise.resolve(fn(req, res, next)).catch(next)
+//Util.handleErrors declares property which is appended to the Util object
+//fn => (req, res, next) => arrow function named fn, accepts requests, response, next as params
+//Promise.resolve(fn(req, res, next)) - a wrapper that accepts a function as a parameter of the Promise.resolve function.  
+//.catch(next) - if an error, then Promis 'fails', error is caught and forwarded to next process in the app chain.
+//since it's an error being passed via next, Express Error handler will catch and then build and deliver the error view to the client.  
+
 module.exports = Util
