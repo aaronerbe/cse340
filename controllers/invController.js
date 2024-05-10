@@ -19,4 +19,31 @@ invCont.buildByClassificationId = async function (req, res, next) {             
     })
 }
 
+/* ***************************
+ *  Build details by inventory view
+ * ***************************/
+invCont.buildByInventoryId = async function (req, res, next) {
+    
+    //to force an error 500 for the assignment
+    //trigger off an inventory_id of 2 (the batmobile)
+    if (req.params.inventoryId == 2){
+        const forcedError = 5 / 0
+        res.render(forcedError)
+    }
+
+    const inventory_id = req.params.inventoryId                                     //builds requests command that will be sent to the model.  req object that is sent.  params is an express function that represents the data that was passed in from the client.
+    const data = await invModel.getDetailByInventoryId(inventory_id)             //calls getInventoryByInventoryId from model.  sends it the above request object
+    const detail = await utilities.buildClassificationDetail(data)                  //utility function to build the details based on Data array.  Will contian html string
+    let nav = await utilities.getNav()                                              //calls our util to build the nav bar for the page
+    const year = data[0].inv_year                                                //extracts the inventory year
+    const make = data[0].inv_make                                                //extracts the inventory make 
+    const model = data[0].inv_model                                              //extracts the inventory model
+    res.render("./inventory/detail", {
+        title: `${year} ${make} ${model}`,                                 //build the title e.g. 1990 Ford Bronco
+        nav,                                                                        //build the nav bar
+        detail                                                                      //build the details into the view
+    })
+}
+
+
 module.exports = invCont                                                            //export the invCont

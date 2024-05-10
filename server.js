@@ -33,6 +33,10 @@ app.get("/", utilities.handleErrors(baseController.buildHome))    //sends utils 
 
 //Inventory routes
 app.use("/inv", inventoryRoute)             //app.use = express function telling app to use resources passed in.  /inv = keyword, indicates route w/ this will use this route file to work with inventory-related processes.  "inv" is simply short hand for "inventory".  inventoryRoute = var representing the inventoryRoute.js (see required statements at top).  IN SHORT - any route starting with /inv will be redirected to 'inventoryRoute.js' to find the rest of the route to fill the request
+
+//Detail routes
+
+
 //File Not Found route
 app.use(async (req, res, next) => {                                         //express function 
   next({status: 404, message: 'Sorry, we appear to have lost that page.'})  //next function to pass control to next function in process chain.  Object (error object), w/ status msg is sent.  
@@ -46,7 +50,10 @@ app.use(async (req, res, next) => {                                         //ex
 app.use(async (err, req, res, next) => {                            // app.use is an Express function, accepts default express arrow function for errors
   let nav = await utilities.getNav()                                //builds nav bar for error view
   console.error(`Error at: "${req.originalUrl}": ${err.message}`)   //console statement to show the route and error.
-  if(err.status == 404){ message = err.message} else {message = 'Oh no! There was a crash. Maybe try a different route?'}
+  if(err.status == 404)
+    { message = err.message} 
+  else 
+    {message = 'Oh no! There was a crash. Maybe try a different route? <br> If you are trying to get to the Batmobile, this error is intentional and exists in the invController'}
   res.render("errors/error", {                                      //calls error.ejs view in errors folder
     title: err.status || 'Server Error',                            //sets value of 'title' for the view.  uses status code or 'server error' as title if no status code
     message,                                           //sets msg to be displayed

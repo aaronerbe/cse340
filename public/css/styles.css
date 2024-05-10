@@ -1,12 +1,20 @@
 /* set color variables */
 :root{
-  --primary-color: #538083;
-  --highlight1: #e8871e;
-  --highlight2: #8c271e;
-  --dark: black;
-  --light: white;
+  /*--primary-color: #538083;*/
+  /*--highlight1: #e8871e;*/
+  /*--highlight2: #8c271e;*/
+  /*--dark: black;*/
+  /*--light: white;*/
   --font-sans: "Poppins", Helvetica, Sans-Serif;
   --font-clean: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+
+    /* COLORS */
+    --primary-color: #02010a;
+    --secondary-color: rgba(5,44,111,1);
+    --transparent-secondary-color:rgba(5, 44, 111, 0.9);
+    --highlight-color: #FF9B42;
+    --light-color:  #EBF0F0;
+
 }
 
 /******* Change Box Model ***************/
@@ -21,6 +29,8 @@
   display: flex;
   flex-direction: column;
   gap: 2rem;
+  width: 90%;
+  margin: 0 auto;
 }
 
 a{
@@ -34,9 +44,17 @@ a{
   justify-content: space-between;
   align-items: center;
   margin: 2rem 0;
+  margin: 0;
+  background-color: var(--primary-color);
+  height: 10vw;
+  padding: 2rem;
+  width: 100%;
+  border-bottom: 2px solid var(--highlight-color);
+  border-left: 1px solid var(--primary-color);
 }
 #top-header *{
-  color: var(--highlight2);
+  /*color: var(--primary-color);*/
+  color: var(--light-color);
   font-weight: bold;
 }
 .siteName *{
@@ -47,28 +65,34 @@ a{
 }
 
 /* NAVIGATION */
+
 nav ul{
   display: flex;
   flex-direction: row;
   justify-content: space-around;
   list-style-type: none;
-  background-color: var(--highlight1);
+  background-color: var(--highlight-color);
+  color: var(--primary-color);
+  border: 1px solid var(--primary-color);
+  border-radius: 8px;
   padding: 0;
-  
+  margin: 3rem 0;
+  font-weight: 600;
+
 }
 nav li{
   padding: 1rem 2vw;
   font-size: clamp(1rem, 2vw, 2rem);
+  transition: transform 0.05s ease-in;
+}
+nav li:hover{
+  transform: scale(1.1);
   font-weight: bold;
 }
 nav a{
-  color: black;
+  color: var(--primary-color);
 }
 nav a:hover{
-  color: white;
-  /*background-color: var(--highlight2);*/
-  color: white;
-  transform: scale(1.0);
   cursor: pointer;
 }
 
@@ -76,6 +100,11 @@ nav a:hover{
 h1{
   font-size: clamp(1.5rem, 2vw, 2rem);
 }
+
+/*#wrapper >:not(#top-header){
+  width: 90%;
+  margin: 0 auto;
+}*/
 
 /* PRODUCT HIGHLIGHT */
 .product-highlight-container{
@@ -146,38 +175,62 @@ h2{
 }
 .upgrade-grid-item-img-container{
   background-color: var(--primary-color);
-  border: 1px solid grey;
+  border: 1px solid var(--secondary-color);
+  border-radius: 10px;
   width: 90%;
   height: 100%;
   margin: 0 auto;
   padding: .5rem;
+  transition: transform 0.1s ease-in;
 }
+.upgrade-grid-item-img-container:hover{
+  transform: scale(1.01);
+
+}
+
 .upgrade-grid-item-img-container img{
   /*padding: .25rem;*/
 }
 
 /* Footer */
-footer *{
-  margin: 2rem 0 0 0;
+footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  text-align: center;
+  margin: 2rem 0 2rem 0;
   padding: 0;
+}
+footer a{
+  color: var(--primary-color);
+  text-decoration: underline;
 }
 
 
 
 /* INVENTORY PAGES */
+.classification-title{
+  font-size: clamp(2rem, 3vw, 2.5rem);
+  /*margin: 2rem;*/
+}
+
 #inv-display{
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
   justify-content: center;
-
   align-items: stretch;
   text-align: center;
   list-style-type: none;
-  background-color: var(--primary-color);
-  padding: 3rem;
+  /*background-color: var(--secondary-color);*/
+  background-color: var(--transparent-secondary-color);
   margin: 0 auto;
+  border-radius: 4px;
+  position: relative;
+  padding: 1rem 0;
 }
+
+
 #inv-display li{
   flex: 1;
   width: max-content;
@@ -186,13 +239,84 @@ footer *{
   padding: 1rem;
   min-width: min-content;
   border-radius: 4px;
-  border: 1px solid var(--highlight1);
-  background-color: var(--light);
+  border: 1px solid var(--primary-color);
+  background-color: var(--light-color);
 }
 
 #inv-display a{
-  color: var(--dark);
+  color: var(--primary-color);
 }
+
+#inv-display img:hover{
+  transform: scale(1.02);
+  transition: transform .2s ease-in-out;
+}
+
+
+/* DETAILS Page */
+.detail-title{
+  font-size: clamp(1.5rem, 3vw, 2.5rem);
+  margin: 2rem;
+}
+.detail-container{
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+  margin: 3rem auto;
+  max-width: 95%;
+
+}
+.detail-img-card{
+  background-color: var(--primary-color);
+  border-radius: 4px;
+  width: 100%;
+  height: auto;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.detail-img-card img{
+  width: 100%;
+  height: auto;
+  display: block;
+  /*border: 1px solid var(--primary-color);*/
+}
+
+.detail-info-card{
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+}
+.detail-info-header{
+  background-color: var(--primary-color);
+  border-radius: 4px;
+  color: var(--highlight-color);
+  font-weight: bold;
+  display: flex;
+  gap: 2rem;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  margin: 0 auto;
+  padding: 2rem;
+  width: 100%;
+  font-size: clamp(1.5rem, 2vw, 2.5rem);
+  text-wrap: nowrap;
+}
+
+.detail-specs{
+  display: flex;
+  flex-direction: column;
+}
+.detail-specs span{
+  font-weight: bold;
+  padding-right: .75rem;
+}
+.detail-specs-miles, .detail-specs-color, .detail-desc{
+  font-size: clamp(1.25rem, 1.5vw, 1.5rem);
+}
+
 
 
 
@@ -215,22 +339,39 @@ footer *{
   }
   /* Set background image */
   body{
+    position: relative;
+    margin: 0;
+    padding: 0;
+    background-repeat: repeat; 
+
+  }
+  body::before {
+    content: "";
+    position: absolute;
+    top: -10vw;
+    left: -10vw;
+    width: calc(100% + 20vw); 
+    height: calc(100% + 20vw); 
     background-image: url('/images/site/small_check_mod.jpg');
     background-size: contain;
     background-repeat: repeat; 
-    margin: 0;
-    padding: 0;
+    opacity: 0.85;
+    z-index: -1;
   }
+
   #wrapper{
+    border: 1px solid var(--primary-color);
     background-color: white;
-    border: 3px solid var(--primary-color);
     border-radius: 10px;
     display: flex;
     flex-direction: column;
-    padding: 1rem;
+    /*padding: 1rem;*/
     overflow: hidden;
     width: 80%;
     margin: 1rem auto;
+  }
+  #wrapper >:not(#top-header){
+    padding: 0 2rem;
   }
   .feature-card{
     top: 15%
@@ -241,6 +382,12 @@ footer *{
   .feature-card p{
     font-size: clamp(1rem, 2vw, 1.5rem);
   }
-
+  .detail-container{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+  .detail-desc{
+    grid-column: 1/-1;
+  }
 
 }
