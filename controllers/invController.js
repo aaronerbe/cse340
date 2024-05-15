@@ -16,6 +16,7 @@ invCont.buildByClassificationId = async function (req, res, next) {             
         title: className + " vehicles",                                             //build 'title' value, not it's dynamic
         nav,                                                                        //nav variable, displays nav bar of the view
         grid,                                                                       //html string, containing the grid of invenotry items
+        errors: null
     })
 }
 
@@ -38,10 +39,12 @@ invCont.buildByInventoryId = async function (req, res, next) {
     const year = data[0].inv_year                                                //extracts the inventory year
     const make = data[0].inv_make                                                //extracts the inventory make 
     const model = data[0].inv_model                                              //extracts the inventory model
+    //req.flash("notice", "This is a flash message.")                               //use this for flash msg.  make sure to add <%- messages() %> to the view page as well to render it
     res.render("./inventory/detail", {
         title: `${year} ${make} ${model}`,                                 //build the title e.g. 1990 Ford Bronco
         nav,                                                                        //build the nav bar
-        detail                                                                      //build the details into the view
+        detail,                                                                      //build the details into the view
+        errors: null
     })
 }
 

@@ -4,4 +4,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">  
     <title><%- title %> | CSE 340 App</title>
     <link rel="stylesheet" href="/css/styles.css">
+    <!-- key off the title that is generated in the controller to determine if we should pull in custom js -->
+    <% if (title === 'Register' || title === 'Login') { %>
+        <script src="/js/pwd.js" defer></script>
+    <% } %>
 </head>

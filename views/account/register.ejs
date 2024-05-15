@@ -1,0 +1,49 @@
+<!-- Content Heading -->
+<% if (title) { %>              <!-- EJS code block to contain JS if structure to see if title var exists -->
+    <h1 class="title"><%= title %></h1>       <!-- if 'title' exists, display it within an h1 -->
+    <% } else {                   
+    res.redirect('/')           
+} %>                            <!-- redirects the response object to the default index route, to deliver the home view -->
+
+<!-- Message -->
+<%- messages() %>
+
+<% if (errors) { %>             <!-- ejs if block to check if error var exists and is not null -->
+    <ul class="notice">         <!-- create unordered list w/ class for styling -->
+<% errors.array().forEach(error => { %>     <!-- treat errors var as array and loop through.  each error is sent into a callback function -->
+    <li><%= error.msg %></li>
+<%  }) %>
+</ul>
+<% } %>
+
+<!-- Login Display -->
+<!-- rather than using a utility, building the html direclty here -->
+
+<div id="register-container">
+    <form class="register-form forms" action="/account/register" method="post">
+        <div class="fname-input field">
+            <label for="fname">First Name:
+                <input type="text" id="fname" name="account_firstname" placeholder="" required>
+            </label>
+        </div>
+        <div class="lname-input field">
+            <label for="lname">Last Name:
+                <input type="text" id="lname" name="account_lastname" placeholder="" required>
+            </label>
+        </div>
+        <div class="email-input field">
+            <label for="email">Email:
+                <input type="email" id="email" name="account_email" placeholder="" required>
+            </label>
+        </div>
+        <div class="password-input field" id="pwContainer">
+            <label for="pw_input">Password:
+                <input type="password" name="account_password" id="pw_input" pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{12,}$" required title="Minimum 12 characters.  Contain at least 1 capital letter, 1 number and 1 special character.">
+            </label>
+            <img id="pwBtn" src="/images/site/show_pass.svg" alt="show/hide password icon">
+        </div>
+        <button class="register-button button" type="submit">Register</button>
+    </form>
+
+    
+</div>

@@ -37,6 +37,13 @@ a{
   text-decoration: none;
 }
 
+.notice{
+  list-style: none;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+  font-size: clamp(1.25rem, 1.5vw, 1.5rem);
+}
 /* HEADER */
 
 #top-header{
@@ -96,11 +103,13 @@ nav a:hover{
   cursor: pointer;
 }
 
-
+.title{
+  font-size: clamp(2rem, 3vw, 2.5rem);
+  text-align: center;
+}
 h1{
   font-size: clamp(1.5rem, 2vw, 2rem);
 }
-
 /*#wrapper >:not(#top-header){
   width: 90%;
   margin: 0 auto;
@@ -113,7 +122,6 @@ h1{
   display: flex;
   justify-content: center;
 }
-
 .product-img{
   position: relative;
   z-index: 1;
@@ -127,7 +135,6 @@ h1{
   /*transform: translateX(-100%);*/
   padding: 0 .5rem 3rem .5rem;
 }
-
 .feature-title{
   font-size: clamp(1.5rem, 2vw, 2rem);
   font-weight: bold;
@@ -158,7 +165,6 @@ h2{
 }
 
 /* Upgrades Grid */
-
 .upgrade-grid{
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -187,7 +193,6 @@ h2{
   transform: scale(1.01);
 
 }
-
 .upgrade-grid-item-img-container img{
   /*padding: .25rem;*/
 }
@@ -209,11 +214,6 @@ footer a{
 
 
 /* INVENTORY PAGES */
-.classification-title{
-  font-size: clamp(2rem, 3vw, 2.5rem);
-  /*margin: 2rem;*/
-}
-
 #inv-display{
   display: flex;
   flex-direction: row;
@@ -229,8 +229,6 @@ footer a{
   position: relative;
   padding: 1rem 0;
 }
-
-
 #inv-display li{
   flex: 1;
   width: max-content;
@@ -242,22 +240,15 @@ footer a{
   border: 1px solid var(--primary-color);
   background-color: var(--light-color);
 }
-
 #inv-display a{
   color: var(--primary-color);
 }
-
 #inv-display img:hover{
   transform: scale(1.02);
   transition: transform .2s ease-in-out;
 }
 
-
 /* DETAILS Page */
-.detail-title{
-  font-size: clamp(1.5rem, 3vw, 2.5rem);
-  margin: 2rem;
-}
 .detail-container{
   display: flex;
   flex-direction: column;
@@ -280,7 +271,6 @@ footer a{
   width: 100%;
   height: auto;
   display: block;
-  /*border: 1px solid var(--primary-color);*/
 }
 
 .detail-info-card{
@@ -317,6 +307,85 @@ footer a{
   font-size: clamp(1.25rem, 1.5vw, 1.5rem);
 }
 
+
+
+/* Login/Register Page */
+.login-title{
+  font-size: clamp(1.5rem, 3vw, 2.5rem);
+  text-align: center;
+}
+.forms{
+  background-color:var(--transparent-secondary-color);
+  color: var(--light-color);
+  width: max-content;
+  margin: 0 auto;
+  padding: 3rem 2.5rem;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 2rem;
+  border-radius: 4px;
+}
+.forms label{
+  font-size: clamp(1rem, 1.5vw, 1.25rem);
+}
+
+input{
+  display: block;
+  border: 1px solid lightgray;
+  border-radius: 4px;
+  padding: .5rem;
+  width: 100%;
+  font-size: 1.25rem;
+}
+input:required:invalid{
+  border-left: 6px solid #B22222
+}
+input:required:valid{
+  border-left: 6px solid green;
+}
+button{
+  font-size: clamp(1rem, 1.5vw, 2rem);
+  padding: .25rem 2rem;
+  width: max-content;
+  margin: 0 auto;
+  border-radius: 20px;
+}
+button:hover{
+  cursor: pointer;
+}
+button:active{
+  background-color: var(--highlight-color);
+}
+#signup{
+  text-align: center;
+  margin: 0;
+  padding: 0;
+  font-size: 1.5rem;
+  font-size: clamp(1.25rem, 3vw, 1.5rem);
+}
+#signup a{
+  color: var(--highlight-color);
+  font-weight: 700;
+}
+
+#pwContainer{
+  position: relative;
+}
+#pw_input{
+  /*padding-right: 30px;*/
+}
+#pwBtn{
+  position: absolute;
+  top: 50%;
+  right: -30px;
+  /*transform: translateY(-50%);*/
+  height: 20px;
+  width: auto;
+  z-index: 10;
+}
 
 
 
@@ -388,6 +457,11 @@ footer a{
   }
   .detail-desc{
     grid-column: 1/-1;
+  }
+  .forms{
+    width: max-content;
+    padding: 3rem 4rem;
+
   }
 
 }
