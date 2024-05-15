@@ -1,6 +1,8 @@
 //Required
 const utilities = require("../utilities/")                  //bring utils into scope
 const accountModel = require("../models/account-model")     //bring account-model into scope
+//TODO For Password Hashing Team Activity
+const bcrypt = require("bcryptjs")
 
 
 /* ****************************************
@@ -35,11 +37,31 @@ async function registerAccount(req, res) {          //async function, pass in re
     let nav = await utilities.getNav()              //build the nav bar
     const { account_firstname, account_lastname, account_email, account_password } = req.body   //collect/store values from HTML form being sent from the browser in the body of the request object.  ONE MORE STEP TO MAKE THIS WORK TBD - done by installing body-parser (to read the info in a body), then updating server.js to add it as a require statement, then add it as middleware
 
+    //TODO For Password Hashing Team Activity
+    // Hash the password before storing
+    let hashedPassword      //declare hashPassword
+    try {
+        // regular password and cost (salt is generated automatically)
+        hashedPassword = await bcrypt.hashSync(account_password, 10)        //calls bcrypt and stores resulting hash into hashedPassword.  Accepts txt password & 'saltRounds' value.  saltRounds = integer indicating how many times a hash will be resent through hashing algo.  10 means hashed 10 times
+    } catch (error) {
+        req.flash("notice", 'Sorry, there was an error processing the registration.')   //flash msg if it fails
+        res.status(500).render("account/register", {                                    //build reg view if it fails
+        title: "Registration",
+        nav,
+        errors: null,
+        })
+    }
+    //TODO END
+
     const regResult = await accountModel.registerAccount(
     account_firstname,
     account_lastname,
     account_email,
-    account_password
+    //TODO For Password Hashing Team Activity
+    //remove account_password and replace w/ hashedPassword
+    //account_password
+    hashedPassword
+    //TODO END
     )
     //determine if result was recieved
     if (regResult) {                                        

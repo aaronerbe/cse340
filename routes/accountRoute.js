@@ -10,6 +10,18 @@ const regValidate = require('../utilities/account-validation')
 router.get("/login/", utilities.handleErrors(accountController.buildLogin))  
 //captures the /login to know we need the login account page.  calls the accountController function.  Included the middleware error handler from the utilities.
 
+//TODO:  temporary to allow logins for testing
+// Process the login attempt
+router.post("/login",       //keys off /login
+    //TODO  TEAM EXERCISE - Add these functions.  AFTER THIS ADD IT TO THE login.ejs view
+    regValidate.loginRules(), 
+    regValidate.checkLoginData,
+    (req, res) => {
+        res.status(200).send('login process')       //forces return successful login
+    }
+)
+
+
 //Route for registration view
 router.get("/register/", utilities.handleErrors(accountController.buildRegister))
 //Route to Post Registration
@@ -20,6 +32,8 @@ router.post(
     regValidate.checkRegData,               //call to run validation & handle errors
     utilities.handleErrors(accountController.registerAccount)   //call to controllre to handle registration if no errors
 )
+
+
 
 //export the route
 module.exports = router;

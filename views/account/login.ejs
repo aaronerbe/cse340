@@ -8,11 +8,21 @@
 <!-- Message -->
 <%- messages() %>
 
+<!-- TODO TEAM EXERCISE  Add this for errors to display -->
+<!-- TODO Don't forget to do client side validation as well -->
+<% if (errors) { %>             <!-- ejs if block to check if error var exists and is not null -->
+    <ul class="notice">         <!-- create unordered list w/ class for styling -->
+<% errors.array().forEach(error => { %>     <!-- treat errors var as array and loop through.  each error is sent into a callback function -->
+    <li><%= error.msg %></li>
+<%  }) %>
+</ul>
+<% } %>
+
 <!-- Login Display -->
 <!-- rather than using a utility, building the html direclty here -->
 
 <div id="login-container">
-    <form class="login-form forms" action="/login" method="post">
+    <form class="login-form forms" action="/account/login" method="post">
         <div class="email-input">
             <label for="email">Email:
                 <input type="email" id="email" name="account_email" placeholder="" required>
@@ -20,7 +30,7 @@
         </div>
         <div class="password-input field" id="pwContainer">
             <label for="pw_input">Password:
-                <input type="password" name="account_password" id="pw_input" required>
+                <input type="password" name="account_password" id="pw_input" pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{12,}$"  required>
             </label>
             <img id="pwBtn" src="/images/site/show_pass.svg" alt="show/hide password icon">
         </div>
