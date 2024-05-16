@@ -75,6 +75,8 @@ a{
 
 nav ul{
   display: flex;
+  flex-wrap: wrap;
+
   flex-direction: row;
   justify-content: space-around;
   list-style-type: none;
@@ -85,21 +87,23 @@ nav ul{
   padding: 0;
   margin: 3rem 0;
   font-weight: 600;
-
+  gap: 1vw;
 }
-nav li{
-  padding: 1rem 2vw;
-  font-size: clamp(1rem, 2vw, 2rem);
+nav ul>li{
+  text-align: center;
   transition: transform 0.05s ease-in;
+  padding-top: 2vw;
+  padding-bottom: 2vw;
 }
-nav li:hover{
+nav ul>li:hover{
   transform: scale(1.1);
   font-weight: bold;
 }
-nav a{
+nav ul>li>a{
   color: var(--primary-color);
+  font-size: clamp(1rem, 2vw, 2rem);
 }
-nav a:hover{
+nav ul>li>a:hover{
   cursor: pointer;
 }
 
@@ -193,9 +197,7 @@ h2{
   transform: scale(1.01);
 
 }
-.upgrade-grid-item-img-container img{
-  /*padding: .25rem;*/
-}
+
 
 /* Footer */
 footer {
@@ -374,9 +376,6 @@ button:active{
 #pwContainer{
   position: relative;
 }
-#pw_input{
-  /*padding-right: 30px;*/
-}
 #pwBtn{
   position: absolute;
   top: 50%;
@@ -387,6 +386,27 @@ button:active{
   z-index: 10;
 }
 
+/* Management Page */
+.links-container{
+  display: flex;
+  flex-direction: column;
+  background-color: var(--transparent-secondary-color);
+  width: max-content;
+  margin: 3rem auto;
+  border-radius: 8px;
+  padding: 3rem;
+}
+.links-container a{
+  padding: 1rem;
+  font-size: 1.5rem;
+  color: var(--light-color);
+  font-weight: 700;
+}
+.links-container a:hover{
+  text-decoration: underline;
+  transform: scale(1.02);
+
+}
 
 
 @media screen and (min-width: 800px) {

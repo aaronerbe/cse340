@@ -41,9 +41,36 @@ async function getDetailByInventoryId(inventory_id){
     console.error("get details by Id Error" + error)
   }
 }
+//build addClassification model
+/* ***************************
+ *  Add New Classification to db
+ * ***************************/
+async function addClassification(classification_name){
+  try{
+    const sql = "INSERT INTO classification (classification_name) VALUES ($1) RETURNING *"
+    return await pool.query(sql, [classification_name])
+  } catch (error){
+      return error.message
+  }
+}
+
+/* **********************
+ *   Check for existing Class
+ * ********************* */
+//checks if the email is already present in the db by returning email.rowCount
+//to be added in account-validation.js utility
+async function checkExistingClass(classification_name){
+  try {
+      const sql = "SELECT * FROM classification WHERE classification_name = $1"
+      const classification = await pool.query(sql, [classification_name])
+      return classification.rowCount
+  } catch (error) {
+      return error.message
+  }
+}
 
 
-module.exports = {getClassifications, getInventoryByClassificationId, getDetailByInventoryId}   //exports these to be used. 
+module.exports = {getClassifications, getInventoryByClassificationId, getDetailByInventoryId, addClassification, checkExistingClass}   //exports these to be used. 
 
 
 

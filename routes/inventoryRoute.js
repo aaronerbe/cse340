@@ -3,7 +3,7 @@ const express = require("express")                                  //Bring expr
 const router = new express.Router()                                 //Create new router object
 const invController = require("../controllers/invController")       //imports the inventory controller into this scope
 const utilities = require("../utilities/") 
-
+const invValidate = require('../utilities/inventory-validation')
 
 
 //Route to build inventory by classification view
@@ -12,6 +12,23 @@ router.get("/type/:classificationId", utilities.handleErrors(invController.build
 //Route to build detail view based on inventory id
 router.get("/detail/:inventoryId", utilities.handleErrors(invController.buildByInventoryId));                 //triggers off /detail/{inventoryID} and sends inventoryId to invController buildByInventoryId function
 
+//Route to Management View.  
+router.get("/", utilities.handleErrors(invController.buildManagement));
+
+//Route to add-classification view
+router.get("/add-classification", utilities.handleErrors(invController.buildAddClassification));
+//TODO POST
+router.post(
+    "/add-classification",
+    invValidate.classificationRules(),
+    invValidate.checkClassificationData,
+    utilities.handleErrors(invController.addClassification)    
+)
+
+
+//TODO - need to build this out
+//Route to add (for adding vehicle) view
+router.get("/add-inventory", utilities.handleErrors(invController.buildAdd));
 
 module.exports = router;    //exports the router
 

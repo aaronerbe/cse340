@@ -62,7 +62,6 @@ Util.buildClassificationGrid = async function(data){        //expects data array
     return grid
 }
 
-
 /* **************************************
 * Build the inventory detail view HTML
 * **************************************/
@@ -93,17 +92,74 @@ Util.buildClassificationDetail = async function(data){
             detail += '</div>'
             
         detail += '</div>'
-            
+
         detail += '<div class="detail-desc">'+desc+'</div>'
-    
+
     detail += '</div>'
-
     return detail
-
 }
 
+/* **************************************
+* Build the Management  view HTML
+* **************************************/
+Util.buildManagementDetail = async function(data){
+    let links
+    const addClassLink = '<a href="../../inv/add-classification/">Add New Classification</a>'
+    const addVehicleLink = '<a href="../../inv/add-inventory/">Add New Vehicle</a>'
 
+    links = '<div class="links-container">'
+        links += addClassLink
+        links += addVehicleLink
+    links += '</div>'
+    return links
+}
 
+/* **************************************
+* Build the Add Classification view HTML
+* **************************************/
+//TODO Individual Assignment - Make it the right form...
+
+//TODO ALso go back and fix login and register views so they utilize the utilities MVC style...
+Util.buildAddClassificationForm = async function(data){
+    let form
+
+    form = `<div id="login-container">
+    <form class="login-form forms" action="/account/login" method="post">
+        <div class="email-input">
+            <label for="email">Email:
+                <input type="email" id="email" name="account_email" placeholder="" required>
+            </label>
+        </div>
+        <div class="password-input field" id="pwContainer">
+            <label for="pw_input">Password:
+                <input type="password" name="account_password" id="pw_input" pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{12,}$"  required>
+            </label>
+            <img id="pwBtn" src="/images/site/show_pass.svg" alt="show/hide password icon">
+        </div>
+        <button class="login-button buttons" type="submit">Login</button>
+        <div id="signup">
+            <span>No Account?</span>
+            <a id="signup-link" href="/account/register">Sign Up</a>
+        </div>
+        
+    </form>
+</div>`
+    return form
+}
+/* **************************************
+* Build the Add Inventory view HTML
+* **************************************/
+Util.buildAddInventoryForm = async function(data){
+    let links
+    const addClassLink = '<a href="../../inv/add-classification/">Add New Classification</a>'
+    const addVehicleLink = '<a href="../../inv/add-inventory/">Add New Vehicle</a>'
+
+    links = '<div class="links-container">'
+        links += addClassLink
+        links += addVehicleLink
+    links += '</div>'
+    return links
+}
 /* ****************************************
  * Middleware For Handling Errors
  * Wrap other function in this for 

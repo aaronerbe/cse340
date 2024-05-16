@@ -13,7 +13,6 @@ router.get("/login/", utilities.handleErrors(accountController.buildLogin))
 //TODO:  temporary to allow logins for testing
 // Process the login attempt
 router.post("/login",       //keys off /login
-    //TODO  TEAM EXERCISE - Add these functions.  AFTER THIS ADD IT TO THE login.ejs view
     regValidate.loginRules(), 
     regValidate.checkLoginData,
     (req, res) => {

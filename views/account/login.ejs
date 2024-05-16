@@ -8,7 +8,6 @@
 <!-- Message -->
 <%- messages() %>
 
-<!-- TODO TEAM EXERCISE  Add this for errors to display -->
 <!-- TODO Don't forget to do client side validation as well -->
 <% if (errors) { %>             <!-- ejs if block to check if error var exists and is not null -->
     <ul class="notice">         <!-- create unordered list w/ class for styling -->
@@ -25,7 +24,7 @@
     <form class="login-form forms" action="/account/login" method="post">
         <div class="email-input">
             <label for="email">Email:
-                <input type="email" id="email" name="account_email" placeholder="" required>
+                <input type="email" id="email" name="account_email" placeholder="" required value="<%= locals.account_email %>">
             </label>
         </div>
         <div class="password-input field" id="pwContainer">
@@ -41,6 +40,4 @@
         </div>
         
     </form>
-
-    
 </div>

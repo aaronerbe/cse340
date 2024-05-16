@@ -31,8 +31,9 @@ invCont.buildByInventoryId = async function (req, res, next) {
         const forcedError = 5 / 0
         res.render(forcedError)
     }
-
-    const inventory_id = req.params.inventoryId                                     //builds requests command that will be sent to the model.  req object that is sent.  params is an express function that represents the data that was passed in from the client.
+    
+    //builds requests command that will be sent to the model.  req object that is sent.  params is an express function that represents the data that was passed in from the client.
+    const inventory_id = req.params.inventoryId
     const data = await invModel.getDetailByInventoryId(inventory_id)             //calls getInventoryByInventoryId from model.  sends it the above request object
     const detail = await utilities.buildClassificationDetail(data)                  //utility function to build the details based on Data array.  Will contian html string
     let nav = await utilities.getNav()                                              //calls our util to build the nav bar for the page
@@ -48,5 +49,77 @@ invCont.buildByInventoryId = async function (req, res, next) {
     })
 }
 
+//build management page
+invCont.buildManagement = async function(req,res){
+    //const data = await invModel.getManagement()   //not needed
+    const links = await utilities.buildManagementDetail()
+    const nav = await utilities.getNav()
 
-module.exports = invCont                                                            //export the invCont
+    res.render("./inventory/management", {
+        title: "Vehicle Management", 
+        nav, 
+        links,
+        errors: null
+    })
+}
+
+//build add-classification page
+invCont.buildAddClassification = async function(req,res){
+
+    //const form = await utilities.buildAddClassificationForm()
+    const nav = await utilities.getNav()
+
+    res.render("./inventory/add-classification", {
+        title: "Add New Classification", 
+        nav, 
+        errors: null
+    })
+}
+//process AddClassification
+invCont.addClassification = async function (req, res){
+    let nav = await utilities.getNav()
+    const {classification_name} = req.body
+    
+    //TODO build addClassification model to interact w/ db
+    const addClassResult = await invModel.addClassification(classification_name)
+
+    //determine if result was recieved
+    if (addClassResult){
+        nav = await utilities.getNav()      //rebuilding the nav bar to reflect the new classification
+        req.flash(
+            "notice",
+            `The ${classification_name} classification has successfully been added.`
+        )
+        res.status(201).render("inventory/add-classification", {
+            title: "Add New Classification",
+            nav,
+            classification_name,
+            errors: null
+        })
+    }
+    else {
+        req.flash("notice", `${classification_name} is invalid.  Please provide a correct classification name`)
+        res.status(501).render("inventory/add-classification", {
+            title: "Add New Classification",
+            nav,
+            classification_name,
+            errors: null
+        })
+    }
+
+}
+
+//build add (to add vehicle) page
+invCont.buildAddInventory = async function(req,res){
+    //const form = await utilities.buildAddInventoryForm()
+    const nav = await utilities.getNav()
+
+    res.render("./inventory/add-inventory", {
+        title: "Add Inventory", 
+        nav, 
+        errors: null
+    })
+}
+
+
+module.exports = invCont                 //export the invCont

@@ -1,0 +1,33 @@
+<!-- Content Heading -->
+<% if (title) { %>              <!-- EJS code block to contain JS if structure to see if title var exists -->
+    <h1 class="title"><%= title %></h1>       <!-- if 'title' exists, display it within an h1 -->
+    <% } else {                   
+    res.redirect('/')           
+} %>                            <!-- redirects the response object to the default index route, to deliver the home view -->
+
+<!-- Message -->
+<%- messages() %>
+
+<% if (errors) { %>             <!-- ejs if block to check if error var exists and is not null -->
+    <ul class="notice">         <!-- create unordered list w/ class for styling -->
+<% errors.array().forEach(error => { %>     <!-- treat errors var as array and loop through.  each error is sent into a callback function -->
+    <li><%= error.msg %></li>
+<%  }) %>
+</ul>
+<% } %>
+
+<!-- Form Display -->
+<div id="add-classification-form-container">
+    <form class="classification-form forms" action="/inv/add-classification" method="post">
+
+        <div class="add-classification-input field">
+            <label for="classification_name">Classification Name
+                <input type="text" id="classificationName" name="classification_name" placeholder="" title="Alphabet characters only.  No spaces or special characters." required pattern="^[A-Za-z]+$"  value="<%= locals.classification_name %>">
+            </label>
+        </div>
+
+        <button class="add-classification-button button" type="submit">Add Classification</button>
+    </form>
+
+    
+</div>

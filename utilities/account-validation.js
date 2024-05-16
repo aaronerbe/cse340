@@ -77,8 +77,6 @@ validate.checkRegData = async (req, res, next) => {                             
     next()
 }
 
-
-//TODO - TEAM EXERCISE
 /* **********************************
 * Login Data Validation Rules
 * ********************************* */
@@ -94,8 +92,8 @@ validate.loginRules = () => {         //anynomous function.  assigned function t
         .withMessage("A valid email is required.")
         .custom(async (account_email) => {          //custom check as async, arrow function with account_email as parameter
             const emailExists = await accountModel.checkExistingEmail(account_email)        //call function from model and collect the value returned (0 or 1)
-            if (emailExists){                                                               //if it exists in the db
-                throw new Error("Email exists. Please log in or use different email")       //error if it does
+            if (!emailExists){                                                               //if it exists in the db
+                throw new Error("Email does not exist.  Please register or use different email")       //error if it does
             }
         }),
     
@@ -114,7 +112,6 @@ validate.loginRules = () => {         //anynomous function.  assigned function t
     ]
 }
 
-//TODO - TEAM EXERCISE - after this, go to accountRoute.js
 /* ******************************
  * Check data and return errors or continue to registration
  * ******************************/

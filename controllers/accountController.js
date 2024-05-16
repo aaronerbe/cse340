@@ -37,7 +37,6 @@ async function registerAccount(req, res) {          //async function, pass in re
     let nav = await utilities.getNav()              //build the nav bar
     const { account_firstname, account_lastname, account_email, account_password } = req.body   //collect/store values from HTML form being sent from the browser in the body of the request object.  ONE MORE STEP TO MAKE THIS WORK TBD - done by installing body-parser (to read the info in a body), then updating server.js to add it as a require statement, then add it as middleware
 
-    //TODO For Password Hashing Team Activity
     // Hash the password before storing
     let hashedPassword      //declare hashPassword
     try {
@@ -51,30 +50,27 @@ async function registerAccount(req, res) {          //async function, pass in re
         errors: null,
         })
     }
-    //TODO END
 
     const regResult = await accountModel.registerAccount(
     account_firstname,
     account_lastname,
     account_email,
-    //TODO For Password Hashing Team Activity
     //remove account_password and replace w/ hashedPassword
     //account_password
     hashedPassword
-    //TODO END
     )
     //determine if result was recieved
     if (regResult) {                                        
     //set flash msg to be displayed using object literal
         req.flash(                                              
-        "notice",
-        `Congratulations, you\'re registered ${account_firstname}. Please log in.`
-    )
-    //calls render function to return the login view w/ an HTTP 201 status code for successful insertion of data.  Note it opens login so they can go straight to logging in after registration
-    res.status(201).render("account/login", {               
-        title: "Login",
-        nav,
-        errors: null
+            "notice",
+            `Congratulations, you\'re registered ${account_firstname}. Please log in.`
+        )
+        //calls render function to return the login view w/ an HTTP 201 status code for successful insertion of data.  Note it opens login so they can go straight to logging in after registration
+        res.status(201).render("account/login", {               
+            title: "Login",
+            nav,
+            errors: null
     })
     }else {
         //flash msg if post failed to updated (insertion)
