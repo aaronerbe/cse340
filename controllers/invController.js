@@ -86,7 +86,6 @@ invCont.addClassification = async function (req, res){
     let nav = await utilities.getNav()
     const {classification_name} = req.body
     
-    //TODO build addClassification model to interact w/ db
     const addClassResult = await invModel.addClassification(classification_name)
 
     //determine if result was recieved
@@ -125,12 +124,54 @@ invCont.buildAddInventory = async function(req,res,next){
     const nav = await utilities.getNav()
 
     res.render("./inventory/add-inventory", {
-        title: "Add Inventory", 
+        title: "Add New Inventory", 
         nav, 
         classSelect,
         errors: null
     })
 }
 
+/* ***************************
+ *  Process & Post add-inventory (add vehicle) form
+ * ***************************/
+invCont.addInventory = async function (req,res,next){
+    let classSelect = await utilities.buildClassificationList()
+    const nav = await utilities.getNav()
+    //collect all the variables from the form (sent via the body)
+    let {classification_id, inv_year, inv_make, inv_model, inv_description, inv_image, inv_thumbnail, inv_price, inv_miles, inv_color} = req.body
+    //cleanup the variables a bit to ensure make/model is always clean format
+    inv_make = utilities.capitalize(inv_make)
+    inv_model = utilities.capitalize(inv_model)
+    inv_color = utilities.capitalize(inv_color)
+
+    //run model function passing in the variables
+    const addInventoryResult = await invModel.addInventory(classification_id, inv_year, inv_make, inv_model, inv_description, inv_image, inv_thumbnail, inv_price, inv_miles, inv_color)
+
+    //determine if result was recieved
+    if (addInventoryResult){
+        const links = await utilities.buildManagementDetail()
+
+        req.flash(
+            "notice",
+            `${inv_year} ${inv_make} ${inv_model} successfully added`
+        )
+        res.status(201).render("inventory/management", {
+            title: "Add New Inventory",
+            nav,
+            links,
+            errors: null
+        })
+    }else{
+        let classSelect = await utilities.buildClassificationList(classification_id)
+        req.flash("notice", `New Inventory not submitted.  Entry is invalid.  Please correct and resubmit`)
+        res.status(501).render("inventory/add-inventory", {
+            title: "Add New Inventory",
+            nav,
+            classSelect,
+            classification_id, inv_year, inv_make, inv_model, inv_description, inv_image, inv_thumbnail, inv_price, inv_miles, inv_color,
+            errors: null
+        })
+    }
+}
 
 module.exports = invCont                 //export the invCont

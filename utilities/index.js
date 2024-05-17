@@ -150,6 +150,15 @@ Util.buildAddInventoryForm = async function(data){
     links += '</div>'
     return links
 }
+
+/* **************************************
+* Capitalize 1st letter of string
+* **************************************/
+Util.capitalize = function(str) {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+
 /* ****************************************
  * Middleware For Handling Errors
  * Wrap other function in this for 

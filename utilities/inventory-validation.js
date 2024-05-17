@@ -3,11 +3,8 @@ const utilities = require(".")
     const validate = {}
     const invModel = require("../models/inventory-model")
 
-
-
-
 /* **********************************
-* Login Data Validation Rules
+* Classification Post Validation Rules
 * ********************************* */
 validate.classificationRules = () => {         
     return [
@@ -29,7 +26,7 @@ validate.classificationRules = () => {
 }
 
 /* ******************************
- * Check data and return errors or continue to registration
+ * Check data for posting to DB else return errors
  * ******************************/
 validate.checkClassificationData = async (req, res, next) => {     
     const { classification_name } = req.body   
@@ -42,6 +39,107 @@ validate.checkClassificationData = async (req, res, next) => {
             title: "Add New Classification",
             nav,
             classification_name,
+    })
+    return
+    }
+    next()
+}
+
+
+/* **********************************
+* Inventory Post Validation Rules
+* ********************************* */
+validate.inventoryRules = () => {         
+    return [
+        //check classification id
+        body("classification_id")
+        .trim()
+        .escape()
+        .notEmpty()
+        .isLength({min:1})
+        .isNumeric()
+        .withMessage("Please select a Classification"),
+        //check inv_year
+        body("inv_year")
+        .trim()
+        .escape()
+        .notEmpty()
+        .isLength({ min: 4, max: 4 })
+        .isInt({gt: 1000, lt: 9999})
+        .withMessage("Please enter a 4 digit year"),
+        body("inv_make")
+        .trim()
+        .escape()
+        .notEmpty()
+        .isLength({min:3})
+        .withMessage("Please enter Make and ensure at least 3 characters"),
+        body("inv_model")
+        .trim()
+        .escape()
+        .notEmpty()
+        .isLength({min:3})
+        .withMessage("Please enter Model and ensure at least 3 characters"),
+        body("inv_description")
+        .trim()
+        .escape()
+        .notEmpty()
+        .isLength({min:1})
+        .withMessage("Please enter a description"),
+        //image
+        body("inv_image")
+        .trim()
+        //.escape()  had to remove these cause it's html encoding it in the db
+        .notEmpty()
+        .isLength({min:1})
+        .withMessage("Please enter path to image"),
+        body("inv_thumbnail")
+        .trim()
+        //.escape()
+        .notEmpty()
+        .isLength({min:1})
+        .withMessage("Please enter path to thumbnail"),
+        //check inv_price
+        body("inv_price")
+        .trim()
+        .escape()
+        .notEmpty()
+        .isLength({ max: 9})
+        .isInt()
+        .withMessage("Please enter a valid price.  No symbols and less than"),
+        //check inv_miles
+        body("inv_miles")
+        .trim()
+        .escape()
+        .notEmpty()
+        .isLength({ min: 1})
+        .isInt()
+        .withMessage("Please enter miles.  No symbols"),
+        body("inv_color")
+        .trim()
+        .escape()
+        .notEmpty()
+        .isLength({min:1})
+        .withMessage("Please enter color"),
+    ]
+}
+
+/* ******************************
+ * Check data for posting to DB else return errors
+ * ******************************/
+validate.checkInventoryData = async (req, res, next) => {     
+    let errors = []                         //create empty errors array
+    errors = validationResult(req)          //calls express-validator "validationResult" function, sends request obj (with all incoming data) as parameter.  Errors will be stored into the errors array
+    if (!errors.isEmpty()) {                //check if errors exist
+        const { classification_id, inv_year, inv_make, inv_model, inv_description, inv_image, inv_thumbnail, inv_price, inv_miles, inv_color } = req.body   
+        const nav = await utilities.getNav()      //build nav bar
+        const classSelect = await utilities.buildClassificationList(classification_id)
+        req.flash("notice", `New Inventory not submitted.  Entry is invalid.  Please correct and resubmit`)
+        res.render("inventory/add-inventory", {        //sends back to render function to rebuild add-classification view
+            errors,                             //error array is returned
+            title: "Add New Inventory",
+            nav,
+            classification_id, inv_year, inv_make, inv_model, inv_description, inv_image, inv_thumbnail, inv_price, inv_miles, inv_color,
+            classSelect,
     })
     return
     }

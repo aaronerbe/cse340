@@ -43,6 +43,8 @@ a{
   padding: 2rem;
   text-align: center;
   font-size: clamp(1.25rem, 1.5vw, 1.5rem);
+  color: #92140C;
+  font-weight: 700;
 }
 /* HEADER */
 

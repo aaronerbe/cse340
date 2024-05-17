@@ -30,7 +30,11 @@ router.post(
 router.get("/add-inventory", utilities.handleErrors(invController.buildAddInventory));
 //TODO
 //Route to post new vehicle from the add-inventory form
-router.post("/add-inventory", utilities.handleErrors(invController.addInvntory))
+router.post(
+    "/add-inventory", 
+    invValidate.inventoryRules(),
+    invValidate.checkInventoryData,
+    utilities.handleErrors(invController.addInventory))
 
 module.exports = router;    //exports the router
 
