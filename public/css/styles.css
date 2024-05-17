@@ -326,28 +326,36 @@ footer a{
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: center;
+  /*align-items: center;*/
   gap: 2rem;
   border-radius: 4px;
+  align-items: stretch;
 }
 .forms label{
   font-size: clamp(1rem, 1.5vw, 1.25rem);
 }
 
-input{
+input, #inv_description, select{
   display: block;
   border: 1px solid lightgray;
   border-radius: 4px;
   padding: .5rem;
   width: 100%;
   font-size: 1.25rem;
+  /*box-sizing: border-box;*/
+  margin: 0;
 }
-input:required:invalid{
+input:required:invalid, #inv_description:required:invalid, select:required:invalid{
   border-left: 6px solid #B22222
 }
-input:required:valid{
+input:required:valid, #inv_description:required:valid, select:required:valid{
   border-left: 6px solid green;
 }
+#inv_description{
+  resize: vertical;
+}
+
+
 button{
   font-size: clamp(1rem, 1.5vw, 2rem);
   padding: .25rem 2rem;
@@ -479,9 +487,13 @@ button:active{
     grid-column: 1/-1;
   }
   .forms{
-    width: max-content;
+    width: 80%;
     padding: 3rem 4rem;
-
+  }
+  .field, #inv-description-input{
+    width: 80%;
+    max-width: 25rem;
+    margin: 0 auto;
   }
 
 }

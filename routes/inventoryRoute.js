@@ -17,7 +17,7 @@ router.get("/", utilities.handleErrors(invController.buildManagement));
 
 //Route to add-classification view
 router.get("/add-classification", utilities.handleErrors(invController.buildAddClassification));
-//TODO POST
+//Route to post new classifcation
 router.post(
     "/add-classification",
     invValidate.classificationRules(),
@@ -26,9 +26,11 @@ router.post(
 )
 
 
-//TODO - need to build this out
-//Route to add (for adding vehicle) view
-router.get("/add-inventory", utilities.handleErrors(invController.buildAdd));
+//Route to create add inventory form view (for adding vehicle)
+router.get("/add-inventory", utilities.handleErrors(invController.buildAddInventory));
+//TODO
+//Route to post new vehicle from the add-inventory form
+router.post("/add-inventory", utilities.handleErrors(invController.addInvntory))
 
 module.exports = router;    //exports the router
 

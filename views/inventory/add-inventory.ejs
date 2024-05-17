@@ -8,5 +8,91 @@
 <!-- Message -->
 <%- messages() %>
 
+
+<% if (errors) { %>             <!-- ejs if block to check if error var exists and is not null -->
+    <ul class="notice">         <!-- create unordered list w/ class for styling -->
+<% errors.array().forEach(error => { %>     <!-- treat errors var as array and loop through.  each error is sent into a callback function -->
+    <li><%= error.msg %></li>
+<%  }) %>
+</ul>
+<% } %>
+
+
 <!-- Form Display -->
-<%- form %> 
+
+
+<div id="add-inventory-form-container">
+    <form class="inventory-form forms" action="/inv/add-inventory" method="post">
+        <!-- classification drop down -->
+        <div class="select-class-input field">
+            <label for="classification_id">Classification
+                <%- classSelect %> 
+            </label>
+        </div>
+
+        <!-- Year -->
+        <div class="inv-year-input field">
+            <label for="inv_year">Year
+                <input type="text" id="inv_year" name="inv_year" placeholder="4-digit year" required pattern="\d*" minlength="4" maxlength="4">
+            </label>    
+        </div>
+
+        <!-- Make -->
+        <div class="inv-make-input field">
+            <label for="inv_make">Make
+                <input type="text" id="inv_make" name="inv_make" placeholder="Min of 3 characters" required minlength="3">
+            </label>    
+        </div>
+
+        <!-- Model -->
+        <div class="inv-model-input field">
+            <label for="inv_model">Model
+                <input type="text" id="inv_model" name="inv_model" placeholder="Min of 3 characters" required minlength="3">
+            </label>    
+        </div>
+
+        <!-- Description -->
+        <div id="inv-description-input" class="field">
+            <label for="inv_description">Description
+                <textarea id="inv_description" name="inv_description" placeholder="Add a description of the vehicle" required minlength="1" rows="4"></textarea>
+            </label>    
+        </div>
+
+        <!-- Image -->
+        <div class="inv-image-input field">
+            <label for="inv_image">Image
+                <input type="text" id="inv_image" name="inv_image" value="/images/vehicles/no-image.png" required minlength="1">
+            </label>    
+        </div>
+
+        <!-- Thumbnail -->
+        <div class="inv-thumbnail-input field">
+            <label for="inv_thumbnail">Thumbnail
+                <input type="text" id="inv_thumbnail" name="inv_thumbnail" value="/images/vehicles/no-image.png" required minlength="1">
+            </label>    
+        </div>
+
+        <!-- Price -->
+        <div class="inv-price-input field">
+            <label for="inv_price">Price
+                <input type="text" id="inv_price" name="inv_price" placeholder="Decimal or Integer" required pattern="^\d+(\.\d{1,2})?$" minlength="1">
+            </label>    
+        </div>
+
+        <!-- Miles -->
+        <div class="inv-miles-input field">
+            <label for="inv_miles">Miles
+                <input type="text" id="inv_miles" name="inv_miles" placeholder="Digits only" required pattern="\d*">
+            </label>    
+        </div>
+
+        <!-- Color -->
+        <div class="inv-color-input field">
+            <label for="inv_color">Color
+                <input type="text" id="inv_color" name="inv_color" required pattern="^[A-Za-z]+$">
+            </label>    
+        </div>
+
+        <button class="add-inventory-button button" type="submit">Add Inventory</button>
+    </form>
+</div>

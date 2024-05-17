@@ -25,6 +25,27 @@ Util.getNav = async function (req, res, next) {
     return list
 }
 
+/* **************************************
+* Build the classification form input for add-inventory
+* ************************************ */
+Util.buildClassificationList = async function (classification_id = null) {
+    let data = await invModel.getClassifications()      //use model to go get the classification_names
+    let classificationList = '<select name="classification_id" id="classification_id" required>'
+        classificationList += "<option value=''>Choose a Classification</option>"
+        //iterate through each row of the classification table
+        data.rows.forEach((row) => {
+            //create an option for each.  the value is the classification_id    
+            classificationList += '<option value="' + row.classification_id + '"'
+            //checks if the classification_id passed into the function (optional) matches the current row.  if so, mark it as default
+            if (classification_id != null && row.classification_id == classification_id){
+                classificationList += " selected "
+            }
+            //adds the classification_name for the user visibility to select
+            classificationList += ">" + row.classification_name + "</option>"
+    })
+    classificationList += "</select>"
+    return classificationList
+}
 
 /* **************************************
 * Build the classification view HTML
@@ -114,38 +135,7 @@ Util.buildManagementDetail = async function(data){
     return links
 }
 
-/* **************************************
-* Build the Add Classification view HTML
-* **************************************/
-//TODO Individual Assignment - Make it the right form...
 
-//TODO ALso go back and fix login and register views so they utilize the utilities MVC style...
-Util.buildAddClassificationForm = async function(data){
-    let form
-
-    form = `<div id="login-container">
-    <form class="login-form forms" action="/account/login" method="post">
-        <div class="email-input">
-            <label for="email">Email:
-                <input type="email" id="email" name="account_email" placeholder="" required>
-            </label>
-        </div>
-        <div class="password-input field" id="pwContainer">
-            <label for="pw_input">Password:
-                <input type="password" name="account_password" id="pw_input" pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{12,}$"  required>
-            </label>
-            <img id="pwBtn" src="/images/site/show_pass.svg" alt="show/hide password icon">
-        </div>
-        <button class="login-button buttons" type="submit">Login</button>
-        <div id="signup">
-            <span>No Account?</span>
-            <a id="signup-link" href="/account/register">Sign Up</a>
-        </div>
-        
-    </form>
-</div>`
-    return form
-}
 /* **************************************
 * Build the Add Inventory view HTML
 * **************************************/

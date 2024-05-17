@@ -49,7 +49,9 @@ invCont.buildByInventoryId = async function (req, res, next) {
     })
 }
 
-//build management page
+/* ***************************
+ *  Build management page - add classification & inventory
+ * ***************************/
 invCont.buildManagement = async function(req,res){
     //const data = await invModel.getManagement()   //not needed
     const links = await utilities.buildManagementDetail()
@@ -63,7 +65,9 @@ invCont.buildManagement = async function(req,res){
     })
 }
 
-//build add-classification page
+/* ***************************
+ *  Build Add Classification Form Page
+ * ***************************/
 invCont.buildAddClassification = async function(req,res){
 
     //const form = await utilities.buildAddClassificationForm()
@@ -75,7 +79,9 @@ invCont.buildAddClassification = async function(req,res){
         errors: null
     })
 }
-//process AddClassification
+/* ***************************
+ *  Process & Post Add Classification Page
+ * ***************************/
 invCont.addClassification = async function (req, res){
     let nav = await utilities.getNav()
     const {classification_name} = req.body
@@ -109,14 +115,19 @@ invCont.addClassification = async function (req, res){
 
 }
 
-//build add (to add vehicle) page
-invCont.buildAddInventory = async function(req,res){
-    //const form = await utilities.buildAddInventoryForm()
+/* ***************************
+ *  Build add-inventory (add vehicle) form view
+ * ***************************/
+invCont.buildAddInventory = async function(req,res,next){
+    //approach is collect all the db info I need, then pass to a utility to build the html needed for the form
+    //take advantage of existing function used for getNav
+    const classSelect = await utilities.buildClassificationList()
     const nav = await utilities.getNav()
 
     res.render("./inventory/add-inventory", {
         title: "Add Inventory", 
         nav, 
+        classSelect,
         errors: null
     })
 }
