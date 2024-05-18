@@ -25,30 +25,10 @@ Util.getNav = async function (req, res, next) {
     return list
 }
 
-/* **************************************
-* Build the classification form input for add-inventory
-* ************************************ */
-Util.buildClassificationList = async function (classification_id = null) {
-    let data = await invModel.getClassifications()      //use model to go get the classification_names
-    let classificationList = '<select name="classification_id" id="classification_id" required>'
-        classificationList += "<option value=''>Choose a Classification</option>"
-        //iterate through each row of the classification table
-        data.rows.forEach((row) => {
-            //create an option for each.  the value is the classification_id    
-            classificationList += '<option value="' + row.classification_id + '"'
-            //checks if the classification_id passed into the function (optional) matches the current row.  if so, mark it as default
-            if (classification_id != null && row.classification_id == classification_id){
-                classificationList += " selected "
-            }
-            //adds the classification_name for the user visibility to select
-            classificationList += ">" + row.classification_name + "</option>"
-    })
-    classificationList += "</select>"
-    return classificationList
-}
+
 
 /* **************************************
-* Build the classification view HTML
+* Build the classification view for inv/add-classification
 * ************************************ */
 Util.buildClassificationGrid = async function(data){        //expects data array as parameter
     let grid                                                //variable to hold html string defining the grid
@@ -121,7 +101,7 @@ Util.buildClassificationDetail = async function(data){
 }
 
 /* **************************************
-* Build the Management  view HTML
+* Build the Management view HTML for inv/
 * **************************************/
 Util.buildManagementDetail = async function(data){
     let links
@@ -135,9 +115,8 @@ Util.buildManagementDetail = async function(data){
     return links
 }
 
-
 /* **************************************
-* Build the Add Inventory view HTML
+* Build the Add Inventory view for inv/add-inventory
 * **************************************/
 Util.buildAddInventoryForm = async function(data){
     let links
@@ -152,7 +131,29 @@ Util.buildAddInventoryForm = async function(data){
 }
 
 /* **************************************
-* Capitalize 1st letter of string
+* Build the classification input for add-classification
+* ************************************ */
+Util.buildClassificationList = async function (classification_id = null) {
+    let data = await invModel.getClassifications()      //use model to go get the classification_names
+    let classificationList = '<select name="classification_id" id="classification_id" required>'
+        classificationList += "<option value=''>Choose a Classification</option>"
+        //iterate through each row of the classification table
+        data.rows.forEach((row) => {
+            //create an option for each.  the value is the classification_id    
+            classificationList += '<option value="' + row.classification_id + '"'
+            //checks if the classification_id passed into the function (optional) matches the current row.  if so, mark it as default
+            if (classification_id != null && row.classification_id == classification_id){
+                classificationList += " selected "
+            }
+            //adds the classification_name for the user visibility to select
+            classificationList += ">" + row.classification_name + "</option>"
+    })
+    classificationList += "</select>"
+    return classificationList
+}
+
+/* **************************************
+* Utility to Capitalize 1st letter of string
 * **************************************/
 Util.capitalize = function(str) {
     return str.charAt(0).toUpperCase() + str.slice(1);

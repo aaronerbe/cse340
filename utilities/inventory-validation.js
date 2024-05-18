@@ -15,8 +15,9 @@ validate.classificationRules = () => {
         .notEmpty()
         .isLength({min:1})
         .isAlpha()
-        .withMessage("Password does not meet requirements.")
+        .withMessage("Name Must be Alphabetic Characters <br>No Spaces <br>Special Characters")
         .custom(async (classification_name) => {          //custom check as async, arrow function with account_email as parameter
+            classification_name = utilities.capitalize(classification_name)
             const classExists = await invModel.checkExistingClass(classification_name)        //call function from model and collect the value returned (0 or 1)
             if (classExists){                                                               //if it exists in the db
                 throw new Error("Classification already exists.  Add a new classification")       //error if it does
@@ -34,6 +35,7 @@ validate.checkClassificationData = async (req, res, next) => {
     errors = validationResult(req)          //calls express-validator "validationResult" function, sends request obj (with all incoming data) as parameter.  Errors will be stored into the errors array
     if (!errors.isEmpty()) {                //check if errors exist
         let nav = await utilities.getNav()      //build nav bar
+        req.flash("notice", `New Category not submitted.  Invalid Entry  <br>Please correct and resubmit`)
         res.render("inventory/add-classification", {        //sends back to render function to rebuild add-classification view
             errors,                             //error array is returned
             title: "Add New Classification",
@@ -58,7 +60,7 @@ validate.inventoryRules = () => {
         .notEmpty()
         .isLength({min:1})
         .isNumeric()
-        .withMessage("Please select a Classification"),
+        .withMessage("Vehicle Classification is required"),
         //check inv_year
         body("inv_year")
         .trim()
@@ -66,38 +68,38 @@ validate.inventoryRules = () => {
         .notEmpty()
         .isLength({ min: 4, max: 4 })
         .isInt({gt: 1000, lt: 9999})
-        .withMessage("Please enter a 4 digit year"),
+        .withMessage("4 digit year is required"),
         body("inv_make")
         .trim()
         .escape()
         .notEmpty()
         .isLength({min:3})
-        .withMessage("Please enter Make and ensure at least 3 characters"),
+        .withMessage("Vehicle Make is required <br>Must be at least 3 characters"),
         body("inv_model")
         .trim()
         .escape()
         .notEmpty()
         .isLength({min:3})
-        .withMessage("Please enter Model and ensure at least 3 characters"),
+        .withMessage("Vehicle Model is required  <br>Must be at least 3 characters"),
         body("inv_description")
         .trim()
         .escape()
         .notEmpty()
         .isLength({min:1})
-        .withMessage("Please enter a description"),
+        .withMessage("Vehicle description is required"),
         //image
         body("inv_image")
         .trim()
         //.escape()  had to remove these cause it's html encoding it in the db
         .notEmpty()
         .isLength({min:1})
-        .withMessage("Please enter path to image"),
+        .withMessage("Path to image is required"),
         body("inv_thumbnail")
         .trim()
         //.escape()
         .notEmpty()
         .isLength({min:1})
-        .withMessage("Please enter path to thumbnail"),
+        .withMessage("Path to thumbnail is required"),
         //check inv_price
         body("inv_price")
         .trim()
@@ -105,7 +107,7 @@ validate.inventoryRules = () => {
         .notEmpty()
         .isLength({ max: 9})
         .isInt()
-        .withMessage("Please enter a valid price.  No symbols and less than"),
+        .withMessage("Please enter a valid price  <br>No symbols <br>No special characters"),
         //check inv_miles
         body("inv_miles")
         .trim()
@@ -113,13 +115,13 @@ validate.inventoryRules = () => {
         .notEmpty()
         .isLength({ min: 1})
         .isInt()
-        .withMessage("Please enter miles.  No symbols"),
+        .withMessage("Mileage is required  <br>No symbols or spaces"),
         body("inv_color")
         .trim()
         .escape()
         .notEmpty()
         .isLength({min:1})
-        .withMessage("Please enter color"),
+        .withMessage("Vehicle color is required"),
     ]
 }
 
@@ -133,7 +135,7 @@ validate.checkInventoryData = async (req, res, next) => {
         const { classification_id, inv_year, inv_make, inv_model, inv_description, inv_image, inv_thumbnail, inv_price, inv_miles, inv_color } = req.body   
         const nav = await utilities.getNav()      //build nav bar
         const classSelect = await utilities.buildClassificationList(classification_id)
-        req.flash("notice", `New Inventory not submitted.  Entry is invalid.  Please correct and resubmit`)
+        req.flash("notice", `New Inventory not submitted.  Invalid Entry  <br>Please correct and resubmit`)
         res.render("inventory/add-inventory", {        //sends back to render function to rebuild add-classification view
             errors,                             //error array is returned
             title: "Add New Inventory",

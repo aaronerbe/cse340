@@ -4,7 +4,7 @@ const utilities = require("../utilities/")                      //bring utilitie
 const invCont = {}                                              //create empty obj
 
 /* ***************************
- *  Build inventory by classification view
+ *  Build inventory by classification view for /inv/type/x
  * ************************** */
 invCont.buildByClassificationId = async function (req, res, next) {                 //async, anoymous function.  accepts request, response objects + Express 'next'
     const classification_id = req.params.classificationId                           //collects classification_id.  req = request object which is sent to server.  params = express function used to represent data that's passed into the URL from client to server.  classification_id = name given to classification_id value in inventoryRoute.js(line7)
@@ -21,7 +21,7 @@ invCont.buildByClassificationId = async function (req, res, next) {             
 }
 
 /* ***************************
- *  Build details by inventory view
+ *  Build details by inventory view for /inv/detail/x
  * ***************************/
 invCont.buildByInventoryId = async function (req, res, next) {
     
@@ -50,7 +50,7 @@ invCont.buildByInventoryId = async function (req, res, next) {
 }
 
 /* ***************************
- *  Build management page - add classification & inventory
+ *  Build management page - add classification & inventory for /inv/
  * ***************************/
 invCont.buildManagement = async function(req,res){
     //const data = await invModel.getManagement()   //not needed
@@ -66,7 +66,7 @@ invCont.buildManagement = async function(req,res){
 }
 
 /* ***************************
- *  Build Add Classification Form Page
+ *  Build Add Classification Form Page for /inv/add-classification
  * ***************************/
 invCont.buildAddClassification = async function(req,res){
 
@@ -80,30 +80,34 @@ invCont.buildAddClassification = async function(req,res){
     })
 }
 /* ***************************
- *  Process & Post Add Classification Page
+ *  Process & Post Add Classification Page for /inv/add-classification
  * ***************************/
 invCont.addClassification = async function (req, res){
     let nav = await utilities.getNav()
-    const {classification_name} = req.body
-    
+    let {classification_name} = req.body
+    classification_name = utilities.capitalize(classification_name)
+    console.log(classification_name)
     const addClassResult = await invModel.addClassification(classification_name)
 
     //determine if result was recieved
     if (addClassResult){
-        nav = await utilities.getNav()      //rebuilding the nav bar to reflect the new classification
+        nav = await utilities.getNav() //rebuilding the nav bar to reflect the new classification
+        const links = await utilities.buildManagementDetail()
+
         req.flash(
             "notice",
-            `The ${classification_name} classification has successfully been added.`
+            `The ${classification_name} Classification successfully added.`
         )
-        res.status(201).render("inventory/add-classification", {
-            title: "Add New Classification",
+        res.status(201).render("inventory/management", {
+            title: "Vehicle Management",
             nav,
+            links,
             classification_name,
             errors: null
         })
     }
     else {
-        req.flash("notice", `${classification_name} is invalid.  Please provide a correct classification name`)
+        req.flash("notice", `${classification_name} is invalid <br>Please provide a correct classification name`)
         res.status(501).render("inventory/add-classification", {
             title: "Add New Classification",
             nav,
@@ -115,7 +119,7 @@ invCont.addClassification = async function (req, res){
 }
 
 /* ***************************
- *  Build add-inventory (add vehicle) form view
+ *  Build add-inventory (add vehicle) form view for /inv/add-inventory
  * ***************************/
 invCont.buildAddInventory = async function(req,res,next){
     //approach is collect all the db info I need, then pass to a utility to build the html needed for the form
@@ -132,7 +136,7 @@ invCont.buildAddInventory = async function(req,res,next){
 }
 
 /* ***************************
- *  Process & Post add-inventory (add vehicle) form
+ *  Process & Post add-inventory (add vehicle) form for /inv/add-inventory
  * ***************************/
 invCont.addInventory = async function (req,res,next){
     let classSelect = await utilities.buildClassificationList()
@@ -156,14 +160,14 @@ invCont.addInventory = async function (req,res,next){
             `${inv_year} ${inv_make} ${inv_model} successfully added`
         )
         res.status(201).render("inventory/management", {
-            title: "Add New Inventory",
+            title: "Vehicle Management",
             nav,
             links,
             errors: null
         })
     }else{
         let classSelect = await utilities.buildClassificationList(classification_id)
-        req.flash("notice", `New Inventory not submitted.  Entry is invalid.  Please correct and resubmit`)
+        req.flash("notice", `New Inventory not submitted.  Invalid Entry  <br>Please correct and resubmit`)
         res.status(501).render("inventory/add-inventory", {
             title: "Add New Inventory",
             nav,
