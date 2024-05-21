@@ -1,5 +1,9 @@
 const invModel = require("../models/inventory-model")
 const Util = {}
+//forJWT
+const jwt = require("jsonwebtoken")
+require("dotenv").config()
+
 
 /* ************************
  * Constructs the nav HTML unordered list
@@ -24,8 +28,6 @@ Util.getNav = async function (req, res, next) {
     list += "</ul>"
     return list
 }
-
-
 
 /* **************************************
 * Build the classification view for inv/add-classification
@@ -171,5 +173,40 @@ Util.handleErrors = fn => (req, res, next) => Promise.resolve(fn(req, res, next)
 //Promise.resolve(fn(req, res, next)) - a wrapper that accepts a function as a parameter of the Promise.resolve function.  
 //.catch(next) - if an error, then Promis 'fails', error is caught and forwarded to next process in the app chain.
 //since it's an error being passed via next, Express Error handler will catch and then build and deliver the error view to the client.  
+
+/* ****************************************
+* Middleware to check token validity
+**************************************** */
+Util.checkJWTToken = (req, res, next) => {
+    if (req.cookies.jwt) {      //see if the cookie exists
+        jwt.verify(             //use jsonwebtoken 'verify' function to check validity of token.  
+            req.cookies.jwt,    //token from cookie
+            process.env.ACCESS_TOKEN_SECRET,    //secret value stored as env variable
+            function (err, accountData) {       //callback function
+                if (err) {              
+                    req.flash("Please log in")  //if error, gives flash msg, clears cookie, reopens login page
+                    res.clearCookie("jwt")
+                    return res.redirect("/account/login")   //TODO does this give sticky for username?
+                }
+                res.locals.accountData = accountData    //if no error captures accountData and sets to response.locals object to be forwarded on through rest of the request-response cycle
+                res.locals.loggedin = 1     //logged in flag (1=true)
+                next()      //tells express server to move on to next step in app flow
+            })
+    } else {
+        next()
+    }
+}
+
+/* ****************************************
+ *  Check Login
+ * ************************************ */
+Util.checkLogin = (req, res, next) => {
+    if (res.locals.loggedin) {      //check if login flag is set (jwt)
+        next()
+    } else {
+    req.flash("notice", "Please log in.")   //if not, force them to login
+    return res.redirect("/account/login")
+    }
+}
 
 module.exports = Util

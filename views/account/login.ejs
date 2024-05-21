@@ -21,8 +21,8 @@
 <!-- rather than using a utility, building the html direclty here -->
 
 <div id="login-container">
-    <form class="login-form forms" action="/account/login" method="post">
-        <div class="email-input">
+    <form class="login-form forms" id="loginForm" action="/account/login" method="post">
+        <div class="email-input field">
             <label for="email">Email:
                 <input type="email" id="email" name="account_email" placeholder="" required value="<%= locals.account_email %>">
             </label>

@@ -1,9 +1,10 @@
 //Required
-const utilities = require("../utilities/")                  //bring utils into scope
-const accountModel = require("../models/account-model")     //bring account-model into scope
-//TODO For Password Hashing Team Activity
+const utilities = require("../utilities/")
+const accountModel = require("../models/account-model") 
 const bcrypt = require("bcryptjs")
-
+//adding for jwt capability - missing from instructions but I think this will work
+const jwt = require('jsonwebtoken')
+require("dotenv").config()
 
 /* ****************************************
 *  Deliver login view
@@ -84,4 +85,55 @@ async function registerAccount(req, res) {          //async function, pass in re
     }
 }
 
-module.exports = { buildLogin, buildRegister, registerAccount }         //exports the function for use
+
+/* ****************************************
+ *  Process login request
+ * ************************************ */
+async function accountLogin(req, res) {
+    let nav = await utilities.getNav()              //builds nav bar
+    const { account_email, account_password } = req.body       //collects variables from request body
+    const accountData = await accountModel.getAccountByEmail(account_email)     //makes call to model-based function to locate data associated w/ an existing email (to be built).  Returned data, if any, is stored into 'accountData' variable
+    if (!accountData) {     //check if data was returned
+        //set message if nothing returned (so no matching creds)
+        req.flash("notice", "Please check your credentials and try again.")
+        res.status(400).render("account/login", {
+            title: "Login",
+            nav,
+            errors: null,
+            account_email,      //sticky email
+        })
+    return
+    }
+    try {
+        if (await bcrypt.compare(account_password, accountData.account_password)) {     //uses bcrypt.compare function to take incoming, plain text password & hashed password from db and compare them to see if they match.  Plain text is hashed using same algo and secret used w/ original password.  Returns TRUE or FALSE
+            delete accountData.account_password         //if matching, then js delete function is used to remove the hashed password from accountData array.  Removes it so this can be added to the jwt sent back to client - no password sent back
+
+            const accessToken = jwt.sign(accountData, process.env.ACCESS_TOKEN_SECRET, { expiresIn: 3600 })     //Create a JWT token.  AccountData is inserted as payload.  Secret is read from .env.  When ready, it's stored into 'accessToken' variable.  NOTE expiration is set in seconds (60s x 60min = 3600s).  So life of 1 hr in seconds.
+            if(process.env.NODE_ENV === 'development') {        //Check if we are in dev environment.  If TRUE - set cookie named 'jwt' with set options
+                console.log('inside dev env check')
+                res.cookie("jwt", accessToken, { httpOnly: true, maxAge: 3600 * 1000 })
+            } 
+            else {                                              //else, we are prodution.  Forces secure (HTTPS) transfer of cookie.  
+                res.cookie("jwt", accessToken, { httpOnly: true, secure: true, maxAge: 3600 * 1000 })
+            }
+            return res.redirect("/account")    //redirect to default account route.  should give account management view (to be created later)
+        }
+    } catch (error) {
+        return new Error('Access Forbidden')    //if an error, set the error msg for error handler.  
+    }
+}
+
+/* ****************************************
+*  Deliver account management view (on successful login)
+* *************************************** */
+async function buildManagement(req, res, next) {     
+    let nav = await utilities.getNav()         
+    res.render("account/management", {
+        title: "Account Management",
+        nav,
+        errors: null
+    })
+}
+
+
+module.exports = { buildLogin, buildRegister, registerAccount, accountLogin, buildManagement}         //exports the function for use

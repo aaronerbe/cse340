@@ -22,6 +22,9 @@ const session = require("express-session")
 const pool = require('./database')
 //adding body-parser so it knows how to read the body info with post
 const bodyParser = require("body-parser")
+//for JWT usage
+const cookieParser = require("cookie-parser")
+
 
 //This is added for session capability.  specifically setting up the express-session
 /* ***********************
@@ -50,6 +53,11 @@ app.use(function(req, res, next){                               //applied and fu
 //Adding Body Parser Middleware
 app.use(bodyParser.json())                          //tells express app to use body parser to work with JSON data (to be used later)
 app.use(bodyParser.urlencoded({ extended: true })) // for parsing application/x-www-form-urlencoded.  Tells express app to read/work with data sent via URL as well as from form, stored in request object's body.  "extended: true" object = config that allows Rich objects and arrays to be parsed.  
+
+//For JWT usage
+app.use(cookieParser())
+app.use(utilities.checkJWTToken)
+
 
 /* ***********************
  * View Engine and Templates
