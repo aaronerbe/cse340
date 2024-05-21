@@ -10,3 +10,18 @@
 
 <!-- Details Display -->
 <%- links %> 
+
+
+<h2 id="managementSubtitle">Manage Inventory</h2>
+<div class="manage-container links-container">
+    <p>Select a classification</p>
+    
+    <%- classSelect %>
+    <table id="inventoryDisplay"></table>
+    <!-- msg if js is disabled -->
+</div>
+<noscript>JavaScript must be enabled to use this page.</noscript>
+
+
+
+<script src="../../js/inventory.js"></script>

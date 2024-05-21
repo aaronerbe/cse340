@@ -114,7 +114,7 @@ nav ul>li>a:hover{
   font-size: clamp(2rem, 3vw, 2.5rem);
   text-align: center;
 }
-h1{
+h1, h2{
   font-size: clamp(1.5rem, 2vw, 2rem);
 }
 /*#wrapper >:not(#top-header){
@@ -408,24 +408,57 @@ button:active{
 }
 
 /* Management Page */
-.links-container{
+#managementSubtitle{
+  text-align: center;
+  margin-top: 4rem;
+}
+.links-container, .manage-container{
   display: flex;
   flex-direction: column;
   background-color: var(--transparent-secondary-color);
-  width: max-content;
+  width: 100%;
+  /*max-width: max-content;*/
   margin: 3rem auto;
-  border-radius: 8px;
   padding: 3rem;
+  color: var(--light-color);
+  gap: 1rem;
 }
 .links-container a{
-  padding: 1rem;
-  font-size: 1.5rem;
+  padding: 0;
+  font-size: 1.25rem;
+  text-align: center;
   color: var(--light-color);
-  font-weight: 700;
+  /*font-weight: 700;*/
 }
 .links-container a:hover{
   text-decoration: underline;
   transform: scale(1.02);
+}
+
+.manage-container p{
+  font-size: 1.25rem;
+  word-wrap: normal;
+  text-align: center;
+  /*padding: 2rem;*/
+  margin: 0;
+}
+.manage-container select{
+  max-width: max-content;
+  margin: 0 auto;
+}
+.manage-container table{
+  /*max-width: max-content;*/
+  width: 90%;
+  margin: 3rem auto 0 auto;
+  background-color: var(--primary-color);
+  border-radius: 8px;
+  padding: 0;
+}
+.manage-container table td, .manage-container table th, .manage-container table a{
+  font-size: 1.25rem;
+  font-size: clamp(.25rem, 3vw, 1.25rem);
+  padding: .5rem;
+  text-align: left;
 }
 
 
@@ -506,6 +539,11 @@ button:active{
     width: 80%;
     max-width: 25rem;
     margin: 0 auto;
+  }
+  .links-container{
+    width: 90%;
+    border-radius: 8px;
+
   }
 
 }

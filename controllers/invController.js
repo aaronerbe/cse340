@@ -57,12 +57,29 @@ invCont.buildManagement = async function(req,res){
     const links = await utilities.buildManagementDetail()
     const nav = await utilities.getNav()
 
+    const classSelect = await utilities.buildClassificationList()
+
+
     res.render("./inventory/management", {
         title: "Vehicle Management", 
         nav, 
         links,
+        classSelect,
         errors: null
     })
+}
+
+/* ***************************
+ *  Return Inventory by Classification As JSON
+ * ************************** */
+invCont.getInventoryJSON = async (req, res, next) => {
+    const classification_id = parseInt(req.params.classification_id)    //gets classification_id that's been passed as parameter through the URL.
+    const invData = await invModel.getInventoryByClassificationId(classification_id)    //calls the model function
+    if (invData[0].inv_id) {    //check for valid value in first element of array
+        return res.json(invData)    //return the result set as JSON object
+    } else {
+        next(new Error("No data returned"))
+    }
 }
 
 /* ***************************

@@ -36,5 +36,10 @@ router.post(
     invValidate.checkInventoryData,
     utilities.handleErrors(invController.addInventory))
 
+
+//route that workds with the URL in the inventory.js.
+router.get("/getInventory/:classification_id", utilities.handleErrors(invController.getInventoryJSON))
+
+
 module.exports = router;    //exports the router
 
