@@ -148,4 +148,29 @@ validate.checkInventoryData = async (req, res, next) => {
     next()
 }
 
+//* copying from checkInventoryData.  this is almost identical but modified for the edit/update inventory view
+/* ******************************
+ * Check data for posting to DB else return errors.  ERRORS TO BE DIRECTED BACK TOTEH "EDIT" (Modify) VIEW
+ * ******************************/
+validate.checkUpdateData = async (req, res, next) => {     
+    let errors = []                         //create empty errors array
+    errors = validationResult(req)          //calls express-validator "validationResult" function, sends request obj (with all incoming data) as parameter.  Errors will be stored into the errors array
+    if (!errors.isEmpty()) {                //check if errors exist
+        const { classification_id, inv_year, inv_make, inv_model, inv_description, inv_image, inv_thumbnail, inv_price, inv_miles, inv_color, inv_id } = req.body   
+        const nav = await utilities.getNav()      //build nav bar
+        const classSelect = await utilities.buildClassificationList(classification_id)
+        const itemName = `${inv_make} ${inv_model}`               
+        req.flash("notice", `Update to Inventory not submitted.  Invalid Entry  <br>Please correct and resubmit`)
+        res.render("inventory/edit-inventory", {        //sends back to render function to rebuild add-classification view
+            errors,                             //error array is returned
+            title: "Edit " + itemName,
+            nav,
+            classification_id, inv_year, inv_make, inv_model, inv_description, inv_image, inv_thumbnail, inv_price, inv_miles, inv_color, inv_id,
+            classSelect,
+    })
+    return
+    }
+    next()
+}
+
 module.exports = validate

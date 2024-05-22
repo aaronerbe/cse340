@@ -5,40 +5,47 @@ const invController = require("../controllers/invController")       //imports th
 const utilities = require("../utilities/") 
 const invValidate = require('../utilities/inventory-validation')
 
+//! CLASSIFICATION VIEW
+//inventory by classification id
+router.get("/type/:classificationId", utilities.handleErrors(invController.buildByClassificationId));
 
-//Route to build inventory by classification view
-router.get("/type/:classificationId", utilities.handleErrors(invController.buildByClassificationId));       //get(route being watched for, function to fulfill the request sent by route)
+//! INVENTORY VIEW
+//inventory detail by inventory id
+router.get("/detail/:inventoryId", utilities.handleErrors(invController.buildByInventoryId));
 
-//Route to build detail view based on inventory id
-router.get("/detail/:inventoryId", utilities.handleErrors(invController.buildByInventoryId));                 //triggers off /detail/{inventoryID} and sends inventoryId to invController buildByInventoryId function
-
-//Route to Management View.  
+//! MANAGE INVENTORY VIEW
+//Manage Inventory View.  
 router.get("/", utilities.handleErrors(invController.buildManagement));
+//* DISPLAY (LIST) INVENTORY BASED ON CATEGORY (inventory.js)
+router.get("/getInventory/:classification_id", utilities.handleErrors(invController.getInventoryJSON))
 
-//Route to add-classification view
+//! EDIT INVENTORY VIEW
+//* "MODIFY" INVENTORY FROM MANAGEMENT TABLE
+router.get("/edit/:inventory_id", utilities.handleErrors(invController.buildEditInventory))
+//* POST UPDATE TO INVENTORY
+router.post("/update/", utilities.handleErrors(invController.updateInventory))
+
+//! ADD CLASSIFICATION VIEW
+//Add-classification view
 router.get("/add-classification", utilities.handleErrors(invController.buildAddClassification));
-//Route to post new classifcation
-router.post(
-    "/add-classification",
+//post new classifcation
+router.post("/add-classification",
     invValidate.classificationRules(),
     invValidate.checkClassificationData,
     utilities.handleErrors(invController.addClassification)    
 )
-
-
-//Route to create add inventory form view (for adding vehicle)
+//! ADD INVENTORY VIEW
+//Add new inventory
 router.get("/add-inventory", utilities.handleErrors(invController.buildAddInventory));
-//TODO
-//Route to post new vehicle from the add-inventory form
+//Post new vehicle to inventory
 router.post(
     "/add-inventory", 
     invValidate.inventoryRules(),
     invValidate.checkInventoryData,
-    utilities.handleErrors(invController.addInventory))
+    utilities.handleErrors(invController.addInventory)
+)
 
 
-//route that workds with the URL in the inventory.js.
-router.get("/getInventory/:classification_id", utilities.handleErrors(invController.getInventoryJSON))
 
 
 module.exports = router;    //exports the router

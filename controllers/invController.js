@@ -3,6 +3,8 @@ const utilities = require("../utilities/")                      //bring utilitie
 
 const invCont = {}                                              //create empty obj
 
+
+//! INVENTORY CLASSIFICATION VIEW
 /* ***************************
  *  Build inventory by classification view for /inv/type/x
  * ************************** */
@@ -20,6 +22,7 @@ invCont.buildByClassificationId = async function (req, res, next) {             
     })
 }
 
+//! INVENTORY DETAIL VIEW
 /* ***************************
  *  Build details by inventory view for /inv/detail/x
  * ***************************/
@@ -49,8 +52,9 @@ invCont.buildByInventoryId = async function (req, res, next) {
     })
 }
 
+//! MANAGEMENT VIEW
 /* ***************************
- *  Build management page - add classification & inventory for /inv/
+ * Build management page - add classification & inventory for /inv/
  * ***************************/
 invCont.buildManagement = async function(req,res){
     //const data = await invModel.getManagement()   //not needed
@@ -68,9 +72,8 @@ invCont.buildManagement = async function(req,res){
         errors: null
     })
 }
-
 /* ***************************
- *  Return Inventory by Classification As JSON
+ *  Return Inventory by Classification As JSON FOR MANAGEMENT VIEW CLASSIFICATION DROP DOWN
  * ************************** */
 invCont.getInventoryJSON = async (req, res, next) => {
     const classification_id = parseInt(req.params.classification_id)    //gets classification_id that's been passed as parameter through the URL.
@@ -82,6 +85,114 @@ invCont.getInventoryJSON = async (req, res, next) => {
     }
 }
 
+//! EDIT INVENTORY 'MODIFY' (FROM MANAGEMENT VIEW)
+/* ***************************
+ *  Modify existing inventory.  Builds 'edit inventory' view
+ * ***************************/
+invCont.buildEditInventory = async function(req,res,next){
+    //approach is collect all the db info I need, then pass to a utility to build the html needed for the form
+    //take advantage of existing function used for getNav
+    const inventory_id = parseInt(req.params.inventory_id)
+    const nav = await utilities.getNav()
+    let data = await invModel.getDetailByInventoryId(inventory_id)    //get inv details.  same as inventory detail view
+    data = data[0]                                                      //had to do this to get 1st item in the array
+    const inv_id = data.inv_id
+    const inv_make = data.inv_make
+    const inv_model = data.inv_model
+    const inv_year = data.inv_year
+    const inv_description = data.inv_description
+    const inv_image = data.inv_image
+    const inv_thumbnail = data.inv_thumbnail
+    const inv_price = data.inv_price
+    const inv_miles = data.inv_miles
+    const inv_color = data.inv_color
+    const classification_id = data.classification_id
+
+    const classSelect = await utilities.buildClassificationList(classification_id)     //modify to pass in classification_id
+    const itemName = `${data.inv_make} ${data.inv_model}`               //creating a name to pass back for title/h1
+
+    res.render("./inventory/edit-inventory", {
+        title: "Edit " + itemName, 
+        nav, 
+        inventory_id,
+        classSelect,
+        errors: null,
+        inv_id,
+        inv_make,
+        inv_model,
+        inv_year,
+        inv_description,
+        inv_image,
+        inv_thumbnail,
+        inv_price,
+        inv_miles,
+        inv_color,
+        classification_id,
+    })
+}
+/* ***************************
+ *  copied from addInventory UPDATE INVENTORY DATA
+ * ***************************/
+invCont.updateInventory = async function (req,res,next){
+    let nav = await utilities.getNav()
+    const {  
+        inv_id,
+        inv_make,
+        inv_model,
+        inv_description,
+        inv_image,
+        inv_thumbnail,
+        inv_price,
+        inv_year,
+        inv_miles,
+        inv_color,
+        classification_id} = req.body
+    //const classSelect = await utilities.buildClassificationList()
+    //run model function passing in the variables
+    const updateResult = await invModel.updateInventory(
+        inv_id,
+        inv_make,
+        inv_model,
+        inv_description,
+        inv_image,
+        inv_thumbnail,
+        inv_price,
+        inv_year,
+        inv_miles,
+        inv_color,
+        classification_id
+    )
+    
+    //?  Might need to make these go away??
+    //cleanup the variables a bit to ensure make/model is always clean format
+    //inv_make = utilities.capitalize(updateResult.inv_make)
+    //inv_model = utilities.capitalize(updateResult.inv_model)
+    //inv_color = utilities.capitalize(updateResult.inv_color)
+    const itemName = inv_make + " " + inv_model
+    //determine if result was recieved
+    if (updateResult){
+        //const itemName = inv_make + " " + inv_model
+        //const links = await utilities.buildManagementDetail()
+        req.flash(
+            "notice",
+            `${itemName} successfully updated`
+        )
+        res.redirect("/inv/")
+    }else{
+        const classSelect = await utilities.buildClassificationList(classification_id)
+        req.flash("notice", `${itemName} not updated.  Invalid Entry  <br>Please correct and resubmit`)
+        res.status(501).render("inventory/edit-inventory", {
+            title: "Edit " + itemName ,
+            nav,
+            classSelect: classSelect,
+            inv_id, classification_id, inv_year, inv_make, inv_model, inv_description, inv_image, inv_thumbnail, inv_price, inv_miles, inv_color,
+            errors: null
+        })
+    }
+}
+
+
+//! ADD NEW CLASSIFICATION VIEW & POST
 /* ***************************
  *  Build Add Classification Form Page for /inv/add-classification
  * ***************************/
@@ -135,6 +246,7 @@ invCont.addClassification = async function (req, res){
 
 }
 
+//! ADD NEW INVENTORY VIEW & POST
 /* ***************************
  *  Build add-inventory (add vehicle) form view for /inv/add-inventory
  * ***************************/
@@ -151,7 +263,6 @@ invCont.buildAddInventory = async function(req,res,next){
         errors: null
     })
 }
-
 /* ***************************
  *  Process & Post add-inventory (add vehicle) form for /inv/add-inventory
  * ***************************/
