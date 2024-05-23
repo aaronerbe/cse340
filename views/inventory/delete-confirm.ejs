@@ -1,0 +1,59 @@
+<!-- Content Heading -->
+<% if (title) { %>              <!-- EJS code block to contain JS if structure to see if title var exists -->
+    <h1 class="title"><%= title %></h1>       <!-- if 'title' exists, display it within an h1 -->
+    <% } else {                   
+    res.redirect('/')           
+} %>                            <!-- redirects the response object to the default index route, to deliver the home view -->
+
+<!-- Message -->
+<%- messages() %>
+
+
+<% if (errors) { %>             
+    <ul class="notice">         
+        <% errors.array().forEach(error => { %>     
+            <% if (!error.msg.startsWith('Invalid value')) { %>    
+                <li><%- error.msg %></li>
+            <% } %>
+        <% }) %>
+    </ul>
+<% } %>
+
+
+
+<!-- Form Display -->
+<!-- TODO STEP 2 of TEAM activity.  Next go to Inventory Controller -->
+<h2 id="confirm-delete-title" class="notice">Confirm Permanant Deletion!</h2>
+<div id="delete-inventory-form-container">
+    <form class="inventory-form forms" id="deleteForm" action="/inv/deleted" method="post">
+        <!-- Year -->
+        <div class="inv-year-input field">
+            <label for="inv_year">Year
+                <input readonly type="text" id="inv_year" name="inv_year" placeholder="4-digit year" required pattern="\d*" minlength="4" maxlength="4" value="<%= locals.inv_year %>">
+            </label>    
+        </div>
+        <!-- Make -->
+        <div class="inv-make-input field">
+            <label for="inv_make">Make
+                <input readonly type="text" id="inv_make" name="inv_make" placeholder="Min of 3 characters" required minlength="3" value="<%= locals.inv_make %>">
+            </label>    
+        </div>
+        <!-- Model -->
+        <div class="inv-model-input field">
+            <label for="inv_model">Model
+                <input readonly type="text" id="inv_model" name="inv_model" placeholder="Min of 3 characters" required minlength="3" value="<%= locals.inv_model %>">
+            </label>    
+        </div>
+        <!-- Price -->
+        <div class="inv-price-input field">
+            <label for="inv_price">Price
+                <input readonly type="text" id="inv_price" name="inv_price" placeholder="Decimal or Integer" required pattern="^\d+(\.\d{1,2})?$" minlength="1" maxlength="9" value="<%= locals.inv_price %>">
+            </label>    
+        </div>
+        <button class="delete-inventory-button button" type="submit">Delete Vehicle</button>
+        <input type="hidden" name="inv_id"
+        <% if(locals.inv_id) { %> value="<%= locals.inv_id %>"
+        <% } %>>
+    </form>
+</div>
+

@@ -117,10 +117,9 @@ nav ul>li>a:hover{
 h1, h2{
   font-size: clamp(1.5rem, 2vw, 2rem);
 }
-/*#wrapper >:not(#top-header){
-  width: 90%;
-  margin: 0 auto;
-}*/
+#confirm-delete-title{
+  text-align:center;
+}
 
 /* PRODUCT HIGHLIGHT */
 .product-highlight-container{

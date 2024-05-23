@@ -25,6 +25,11 @@ router.get("/edit/:inventory_id", utilities.handleErrors(invController.buildEdit
 //* POST UPDATE TO INVENTORY
 router.post("/update/", utilities.handleErrors(invController.updateInventory))
 
+//TODO TEAM ASSIGNMENT STEP 1 - step2 goto delete-confirm.ejs
+//! DELETE INVENTORY 
+router.get('/delete/:inventory_id', utilities.handleErrors(invController.buildDeleteInventory))
+router.post("/deleted/", utilities.handleErrors(invController.deleteInventory))
+
 //! ADD CLASSIFICATION VIEW
 //Add-classification view
 router.get("/add-classification", utilities.handleErrors(invController.buildAddClassification));

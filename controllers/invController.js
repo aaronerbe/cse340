@@ -177,6 +177,7 @@ invCont.updateInventory = async function (req,res,next){
             "notice",
             `${itemName} successfully updated`
         )
+        //! CHECK THIS  I think we need to pass in nav, etc.  oh, maybe cause it's redirect it starts the process over for us...
         res.redirect("/inv/")
     }else{
         const classSelect = await utilities.buildClassificationList(classification_id)
@@ -191,6 +192,80 @@ invCont.updateInventory = async function (req,res,next){
     }
 }
 
+//TODO TEAM - STEP 3.  Next Step is build the delete function (post)
+//! DELETE INVENTORY (from managmeent view)
+/* ***************************
+ *  DELETE inventory.  Builds 'delete inventory' view
+ * ***************************/
+invCont.buildDeleteInventory = async function(req,res,next){
+    //approach is collect all the db info I need, then pass to a utility to build the html needed for the form
+    //take advantage of existing function used for getNav
+    const inventory_id = parseInt(req.params.inventory_id)
+    const nav = await utilities.getNav()
+    let data = await invModel.getDetailByInventoryId(inventory_id)    //get inv details.  same as inventory detail view
+    data = data[0]                                                      //had to do this to get 1st item in the array
+    const inv_id = data.inv_id
+    const inv_make = data.inv_make
+    const inv_model = data.inv_model
+    const inv_year = data.inv_year
+    const inv_description = data.inv_description
+    const inv_image = data.inv_image
+    const inv_thumbnail = data.inv_thumbnail
+    const inv_price = data.inv_price
+    const inv_miles = data.inv_miles
+    const inv_color = data.inv_color
+    const classification_id = data.classification_id
+
+    //const classSelect = await utilities.buildClassificationList(classification_id)     //modify to pass in classification_id
+    const itemName = `${data.inv_make} ${data.inv_model}`               //creating a name to pass back for title/h1
+
+    res.render("./inventory/delete-confirm", {
+        title: "Delete " + itemName + "!", 
+        nav, 
+        //inventory_id,
+        //classSelect,
+        errors: null,
+        inv_id,
+        inv_make,
+        inv_model,
+        inv_year,
+        inv_price,
+    })
+}
+//TODO TEAM - STEP 4.  Next step go to model
+/* ***************************
+ * DELETE INVENTORY DATA (copied from udpateInventory)
+ * ***************************/
+invCont.deleteInventory = async function (req,res,next){
+    let nav = await utilities.getNav()
+    const inv_id = parseInt(req.body.inv_id)
+    console.log("inventory id = " + inv_id)
+    const deleteResult = await invModel.deleteInvModel(inv_id)
+    console.log("deleteResult to follow")
+    console.table(deleteResult)
+
+    //?  NOT SURE ABOUT THIS...
+    const inv_make = req.body.inv_make
+    const inv_model = req.body.inv_model
+    const itemName = inv_make + " " + inv_model
+
+    //determine if result was recieved
+    if (deleteResult){
+        req.flash(
+            "notice",
+            `${itemName} successfully deleted`
+        )
+        res.redirect("/inv/")
+    }else{
+        req.flash("notice", `${itemName} not deleted.  Please try again.`)
+        //? NOT SURE ABOUT THIS...
+        res.status(501).redirect(`/delete-confirm/${inv_id}`, {
+            title: "Delete " + itemName + "!" ,
+            nav, 
+            errors: null,
+        })
+    }
+}
 
 //! ADD NEW CLASSIFICATION VIEW & POST
 /* ***************************
@@ -291,10 +366,11 @@ invCont.addInventory = async function (req,res,next){
             title: "Vehicle Management",
             nav,
             links,
+            classSelect,
             errors: null
         })
     }else{
-        let classSelect = await utilities.buildClassificationList(classification_id)
+        classSelect = await utilities.buildClassificationList(classification_id)
         req.flash("notice", `New Inventory not submitted.  Invalid Entry  <br>Please correct and resubmit`)
         res.status(501).render("inventory/add-inventory", {
             title: "Add New Inventory",

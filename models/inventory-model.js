@@ -120,8 +120,21 @@ async function updateInventory(
   }
 }
 
+//TODO TEAM - STEP 5  (make sure to export)
+/* ***************************
+ * DELETE Inventory
+ * ************************** */
+async function deleteInvModel(inv_id){
+  try{
+    const sql = 'DELETE FROM inventory WHERE inv_id = $1'
+    const data = await pool.query(sql, [inv_id])
+    return data
+  } catch (error) {
+    console.error("model error: " + error)
+  }
+}
 
-module.exports = {getClassifications, getInventoryByClassificationId, getDetailByInventoryId, addClassification, checkExistingClass, addInventory, updateInventory}   //exports these to be used. 
+module.exports = {getClassifications, getInventoryByClassificationId, getDetailByInventoryId, addClassification, checkExistingClass, addInventory, updateInventory, deleteInvModel}   //exports these to be used. 
 
 
 
