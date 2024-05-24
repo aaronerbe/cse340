@@ -13,28 +13,44 @@ router.get("/login/", utilities.handleErrors(accountController.buildLogin))
 // Route to Post the login attempt for /login
 router.post("/login",       //keys off /login
     regValidate.loginRules(), 
-    regValidate.checkLoginData,
+    utilities.handleErrors(regValidate.checkLoginData),
     utilities.handleErrors(accountController.accountLogin)
 )
 
 //default view for successful login (account management view)  /management
 //router.get("/", utilities.handleErrors(accountController.buildManagement))  
 //adding checklogin utility to see if they're already logged in
-router.get("/", utilities.checkLogin, utilities.handleErrors(accountController.buildManagement))
+router.get("/", 
+    utilities.handleErrors(utilities.checkJWTToken),
+    utilities.handleErrors(accountController.buildManagement))
 
 
 //Route for registration view
 router.get("/register/", utilities.handleErrors(accountController.buildRegister))
-//Route to Post Registration
 // Process the registration data
-router.post(
-    "/register/",
-    regValidate.registationRules(),         //function containing rules to be used in validation process
-    regValidate.checkRegData,               //call to run validation & handle errors
-    utilities.handleErrors(accountController.registerAccount)   //call to controllre to handle registration if no errors
+router.post("/register/",
+    regValidate.registationRules(),
+    regValidate.checkRegData,
+    utilities.handleErrors(accountController.registerAccount)
 )
 
+//Route for updating account information
+router.get("/update/:account_id", 
+    utilities.handleErrors(accountController.updateAccountView))
 
+router.post("/update-account/:account_id",
+    regValidate.UpdateRules(), 
+    utilities.handleErrors(regValidate.checkUpdateData),
+    utilities.handleErrors(accountController.updateAccount)
+)
+
+router.post("/update-password/:account_id",
+    regValidate.UpdatePasswordRules(),
+    utilities.handleErrors(regValidate.checkUpdateData),
+    utilities.handleErrors(accountController.updatePassword)
+)
+
+router.get("/logout", utilities.handleErrors(accountController.logout))
 
 //export the route
 module.exports = router;

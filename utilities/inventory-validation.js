@@ -49,7 +49,7 @@ validate.checkClassificationData = async (req, res, next) => {
 
 
 /* **********************************
-* Inventory Post Validation Rules
+* Inventory Post Validation Rules for Inventory
 * ********************************* */
 validate.inventoryRules = () => {         
     return [
@@ -126,7 +126,7 @@ validate.inventoryRules = () => {
 }
 
 /* ******************************
- * Check data for posting to DB else return errors
+ * Check data for adding inventory
  * ******************************/
 validate.checkInventoryData = async (req, res, next) => {     
     let errors = []                         //create empty errors array
@@ -142,8 +142,51 @@ validate.checkInventoryData = async (req, res, next) => {
             nav,
             classification_id, inv_year, inv_make, inv_model, inv_description, inv_image, inv_thumbnail, inv_price, inv_miles, inv_color,
             classSelect,
-    })
-    return
+        })
+        return
+    }
+    next()
+}
+/* ******************************
+ * Check data for udpating inventory
+ * ******************************/
+validate.checkInventoryUpdateData = async (req, res, next) => {     
+    let errors = []
+    errors = validationResult(req)
+    if (!errors.isEmpty()) {
+        const { inv_id, classification_id, inv_year, inv_make, inv_model, inv_description, inv_image, inv_thumbnail, inv_price, inv_miles, inv_color } = req.body   
+        const nav = await utilities.getNav()
+        const itemName = inv_make + " " + inv_model
+        const classSelect = await utilities.buildClassificationList(classification_id)
+        req.flash("notice", `New Inventory not submitted.  Invalid Entry  <br>Please correct and resubmit`)
+        //res.redirect("/inv/edit/"+inv_id)
+        //res.render("inventory/edit-inventory/", {
+        //    errors,
+        //    title: "Edit " + itemName ,
+        //    nav,
+        //    classSelect: classSelect,
+        //    inv_id, classification_id, inv_year, inv_make, inv_model, inv_description, inv_image, inv_thumbnail, inv_price, inv_miles, inv_color
+        //})
+        
+        res.render("./inventory/edit-inventory", {
+            errors,
+            title: "Edit " + itemName, 
+            nav, 
+            inv_id,
+            classSelect,
+            inv_id,
+            inv_make,
+            inv_model,
+            inv_year,
+            inv_description,
+            inv_image,
+            inv_thumbnail,
+            inv_price,
+            inv_miles,
+            inv_color,
+            classification_id,
+        })
+        return
     }
     next()
 }

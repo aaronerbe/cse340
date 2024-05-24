@@ -5,48 +5,76 @@ const invController = require("../controllers/invController")       //imports th
 const utilities = require("../utilities/") 
 const invValidate = require('../utilities/inventory-validation')
 
-//! CLASSIFICATION VIEW
+//+ CLASSIFICATION VIEW
 //inventory by classification id
 router.get("/type/:classificationId", utilities.handleErrors(invController.buildByClassificationId));
 
-//! INVENTORY VIEW
+//+ INVENTORY VIEW
 //inventory detail by inventory id
 router.get("/detail/:inventoryId", utilities.handleErrors(invController.buildByInventoryId));
 
-//! MANAGE INVENTORY VIEW
+//+ MANAGE INVENTORY VIEW
 //Manage Inventory View.  
-router.get("/", utilities.handleErrors(invController.buildManagement));
+router.get("/", 
+    utilities.handleErrors(utilities.checkLogin), 
+    utilities.handleErrors(utilities.checkAuthN), 
+    utilities.handleErrors(invController.buildManagement)
+)
 //* DISPLAY (LIST) INVENTORY BASED ON CATEGORY (inventory.js)
 router.get("/getInventory/:classification_id", utilities.handleErrors(invController.getInventoryJSON))
 
-//! EDIT INVENTORY VIEW
+//+ EDIT INVENTORY VIEW
 //* "MODIFY" INVENTORY FROM MANAGEMENT TABLE
-router.get("/edit/:inventory_id", utilities.handleErrors(invController.buildEditInventory))
+router.get("/edit/:inventory_id", 
+    utilities.handleErrors(utilities.checkLogin), 
+    utilities.handleErrors(utilities.checkAuthN), 
+    utilities.handleErrors(invController.buildEditInventory)
+)
 //* POST UPDATE TO INVENTORY
-router.post("/update/", utilities.handleErrors(invController.updateInventory))
+router.post("/update/", 
+    utilities.handleErrors(utilities.checkLogin), 
+    utilities.handleErrors(utilities.checkAuthN), 
+    invValidate.inventoryRules(),
+    utilities.handleErrors(invValidate.checkInventoryUpdateData),
+    utilities.handleErrors(invController.updateInventory)
+)
 
-//TODO TEAM ASSIGNMENT STEP 1 - step2 goto delete-confirm.ejs
-//! DELETE INVENTORY 
+//+ DELETE INVENTORY 
 router.get('/delete/:inventory_id', utilities.handleErrors(invController.buildDeleteInventory))
-router.post("/deleted/", utilities.handleErrors(invController.deleteInventory))
+router.post("/deleted/", 
+    utilities.handleErrors(utilities.checkLogin), 
+    utilities.handleErrors(utilities.checkAuthN), 
+    utilities.handleErrors(invController.deleteInventory)
+)
 
-//! ADD CLASSIFICATION VIEW
+//+ ADD CLASSIFICATION VIEW
 //Add-classification view
-router.get("/add-classification", utilities.handleErrors(invController.buildAddClassification));
+router.get("/add-classification", 
+    utilities.handleErrors(utilities.checkLogin), 
+    utilities.handleErrors(utilities.checkAuthN), 
+    utilities.handleErrors(invController.buildAddClassification)
+)
 //post new classifcation
 router.post("/add-classification",
+    utilities.handleErrors(utilities.checkLogin), 
+    utilities.handleErrors(utilities.checkAuthN), 
     invValidate.classificationRules(),
     invValidate.checkClassificationData,
     utilities.handleErrors(invController.addClassification)    
 )
-//! ADD INVENTORY VIEW
+//+ ADD INVENTORY VIEW
 //Add new inventory
-router.get("/add-inventory", utilities.handleErrors(invController.buildAddInventory));
+router.get("/add-inventory",
+    utilities.handleErrors(utilities.checkLogin), 
+    utilities.handleErrors(utilities.checkAuthN), 
+    utilities.handleErrors(invController.buildAddInventory)
+)
 //Post new vehicle to inventory
-router.post(
-    "/add-inventory", 
+router.post("/add-inventory", 
+    utilities.handleErrors(utilities.checkLogin), 
+    utilities.handleErrors(utilities.checkAuthN), 
     invValidate.inventoryRules(),
-    invValidate.checkInventoryData,
+    utilities.handleErrors(invValidate.checkInventoryData),
     utilities.handleErrors(invController.addInventory)
 )
 

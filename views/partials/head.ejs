@@ -5,7 +5,7 @@
     <title><%- title %> | CSE 340 App</title>
     <link rel="stylesheet" href="/css/styles.css">
     <!-- key off the title that is generated in the controller to determine if we should pull in custom js -->
-    <% if (title === 'Register' || title === 'Login') { %>
+    <% if (title === 'Register' || title === 'Login' || title === 'Update Account') { %>
         <script src="/js/pwd.js" defer></script>
     <% } %>
     <link rel="icon" href="/images/favicon.ico" type="image/x-icon">

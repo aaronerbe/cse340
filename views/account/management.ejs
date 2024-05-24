@@ -10,11 +10,24 @@
 
 <% if (errors) { %>             
     <ul class="notice">         
-<% errors.array().forEach(error => { %>     
-    <li><%= error.msg %></li>
-<%  }) %>
-</ul>
+        <% errors.array().forEach(error => { %>     
+            <% if (!error.msg.startsWith('Invalid value')) { %>    
+                <li><%- error.msg %></li>
+            <% } %>
+        <% }) %>
+    </ul>
 <% } %>
 
-<!-- Simple display for now -->
-<h1>You're logged in</h1>
+<!-- + Assignement 5 -->
+<% if (accountType === "Client") { %>             
+    <h2>Welcome <%= fName %></h2>
+    <p><a title="Update Account Information" href="/account/update/<%= accountId %>">Update Account Information</a></p>
+<% } %>
+<% if (accountType === "Admin" || accountType === "Employee") { %>
+    <h2>Welcome <%= fName %></h2>
+    <p><a title="Update Account Information" href="/account/update/<%= accountId %>">Update Account Information</a></p>
+
+    <h2>Inventory Management</h2>
+    <p><a title="Inventory Management" href="/inv/">Inventory Management</a></p>
+<% } %>
+

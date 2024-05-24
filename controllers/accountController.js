@@ -34,9 +34,9 @@ async function buildRegister(req, res, next) {
 /* ****************************************
 *  Process Registration
 * *************************************** */
-async function registerAccount(req, res) {          //async function, pass in req, response as params
-    let nav = await utilities.getNav()              //build the nav bar
-    const { account_firstname, account_lastname, account_email, account_password } = req.body   //collect/store values from HTML form being sent from the browser in the body of the request object.  ONE MORE STEP TO MAKE THIS WORK TBD - done by installing body-parser (to read the info in a body), then updating server.js to add it as a require statement, then add it as middleware
+async function registerAccount(req, res) {
+    let nav = await utilities.getNav()
+    const { account_firstname, account_lastname, account_email, account_password } = req.body 
 
     // Hash the password before storing
     let hashedPassword      //declare hashPassword
@@ -46,7 +46,7 @@ async function registerAccount(req, res) {          //async function, pass in re
     } catch (error) {
         req.flash("notice", 'Sorry, there was an error processing the registration.')   //flash msg if it fails
         res.status(500).render("account/register", {                                    //build reg view if it fails
-        title: "Registration",
+        title: "Register",
         nav,
         errors: null,
         })
@@ -78,7 +78,7 @@ async function registerAccount(req, res) {          //async function, pass in re
         req.flash("notice", "Sorry, the registration failed.")  
         //renders the registration page (to try again) and returns a 501 status.  501 = 'not successful' in this case
         res.status(501).render("account/register", {            
-            title: "Registration",
+            title: "Register",
             nav,
             errors: null
         })
@@ -92,7 +92,9 @@ async function registerAccount(req, res) {          //async function, pass in re
 async function accountLogin(req, res) {
     let nav = await utilities.getNav()              //builds nav bar
     const { account_email, account_password } = req.body       //collects variables from request body
+    console.log('running model')
     const accountData = await accountModel.getAccountByEmail(account_email)     //makes call to model-based function to locate data associated w/ an existing email (to be built).  Returned data, if any, is stored into 'accountData' variable
+    console.log('finished model')
     if (!accountData) {     //check if data was returned
         //set message if nothing returned (so no matching creds)
         req.flash("notice", "Please check your credentials and try again.")
@@ -107,16 +109,14 @@ async function accountLogin(req, res) {
     try {
         if (await bcrypt.compare(account_password, accountData.account_password)) {     //uses bcrypt.compare function to take incoming, plain text password & hashed password from db and compare them to see if they match.  Plain text is hashed using same algo and secret used w/ original password.  Returns TRUE or FALSE
             delete accountData.account_password         //if matching, then js delete function is used to remove the hashed password from accountData array.  Removes it so this can be added to the jwt sent back to client - no password sent back
-
             const accessToken = jwt.sign(accountData, process.env.ACCESS_TOKEN_SECRET, { expiresIn: 3600 })     //Create a JWT token.  AccountData is inserted as payload.  Secret is read from .env.  When ready, it's stored into 'accessToken' variable.  NOTE expiration is set in seconds (60s x 60min = 3600s).  So life of 1 hr in seconds.
             if(process.env.NODE_ENV === 'development') {        //Check if we are in dev environment.  If TRUE - set cookie named 'jwt' with set options
-                console.log('inside dev env check')
                 res.cookie("jwt", accessToken, { httpOnly: true, maxAge: 3600 * 1000 })
             } 
-            else {                                              //else, we are prodution.  Forces secure (HTTPS) transfer of cookie.  
+            else {  //else, we are prodution.  Forces secure (HTTPS) transfer of cookie.  
                 res.cookie("jwt", accessToken, { httpOnly: true, secure: true, maxAge: 3600 * 1000 })
             }
-            return res.redirect("/account")    //redirect to default account route.  should give account management view (to be created later)
+            return res.redirect(`/account/`)    
         }
     } catch (error) {
         return new Error('Access Forbidden')    //if an error, set the error msg for error handler.  
@@ -135,5 +135,123 @@ async function buildManagement(req, res, next) {
     })
 }
 
+/* ****************************************
+*  Deliver update account
+* *************************************** */
+async function updateAccountView(req, res, next) {   
+    account_id = req.params.account_id
+    console.log(account_id)  
+    const {account_firstname, account_lastname, account_email, account_type} = await accountModel.getAccountByID(account_id)
+    let nav = await utilities.getNav()
+    res.render("account/update", {
+        title: "Update Account",
+        nav,
+        errors: null,
+        account_id,
+        account_firstname,
+        account_lastname,
+        account_email,
+        account_type
+    })
+}
 
-module.exports = { buildLogin, buildRegister, registerAccount, accountLogin, buildManagement}         //exports the function for use
+async function updateAccount(req,res, nest){
+    const nav = await utilities.getNav()
+    const {
+        account_firstname,
+        account_lastname,
+        account_email,
+        account_id,
+    } = req.body
+    const updateResult = await accountModel.updateAccount(
+        account_firstname,
+        account_lastname,
+        account_email,
+        account_id,
+    )
+    if (updateResult){
+        req.flash(
+            "notice",
+            "Account Successfully Update"
+        )
+        res.redirect("/account/")
+    }else{
+        req.flash(
+            "notice",
+            "Failed to update!  Check entries and try again"
+        )
+        res.status(501).render("/account/update",{
+            title: "Update Account",
+            nav,
+            account_id,
+            account_firstname,
+            account_lastname,
+            account_email,
+            errors: null
+        })
+    }
+}
+
+async function updatePassword(req,res, nest){
+    const nav = await utilities.getNav()
+    const {
+        account_firstname,
+        account_lastname,
+        account_email,
+        account_id,
+        account_password
+    } = req.body
+
+    let hashedPassword      //declare hashPassword
+    try {
+        // regular password and cost (salt is generated automatically)
+        hashedPassword = await bcrypt.hashSync(account_password, 10)        //calls bcrypt and stores resulting hash into hashedPassword.  Accepts txt password & 'saltRounds' value.  saltRounds = integer indicating how many times a hash will be resent through hashing algo.  10 means hashed 10 times
+    } catch (error) {
+        res.status(501).render("/account/update",{
+            title: "Update Account",
+            nav,
+            account_id,
+            account_firstname,
+            account_lastname,
+            account_email,
+            errors: null
+        })
+    }
+
+    const updateResult = await accountModel.updatePassword(
+        account_id,
+        hashedPassword
+    )
+    if (updateResult){
+        req.flash(
+            "notice",
+            "Account Successfully Update"
+        )
+        res.redirect("/account/")
+    }else{
+        req.flash(
+            "notice",
+            "Failed to update!  Check entries and try again"
+        )
+        res.status(501).render("/account/update",{
+            title: "Update Account",
+            nav,
+            account_id,
+            account_firstname,
+            account_lastname,
+            account_email,
+            errors: null
+        })
+    }
+}
+
+async function logout(req, res, next){
+    res.clearCookie("jwt")
+    req.flash(
+        "notice",
+        "Successfully logged out"
+    )
+    res.redirect("/")
+}
+
+module.exports = { buildLogin, buildRegister, registerAccount, accountLogin, buildManagement, updateAccountView, updateAccount, updatePassword, logout}         //exports the function for use

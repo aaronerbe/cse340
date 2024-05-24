@@ -72,6 +72,7 @@ a{
 }
 #tools{
   font-size: clamp(.75rem, 2vw, 2rem);
+  text-align: right;
 }
 
 /* NAVIGATION */
@@ -117,7 +118,7 @@ nav ul>li>a:hover{
 h1, h2{
   font-size: clamp(1.5rem, 2vw, 2rem);
 }
-#confirm-delete-title{
+#confirm-delete-title,  .centered-title{
   text-align:center;
 }
 

@@ -1,4 +1,5 @@
 const invModel = require("../models/inventory-model")
+const accountModel = require("../models/account-model")
 const Util = {}
 //forJWT
 const jwt = require("jsonwebtoken")
@@ -184,15 +185,22 @@ Util.checkJWTToken = (req, res, next) => {
             process.env.ACCESS_TOKEN_SECRET,    //secret value stored as env variable
             function (err, accountData) {       //callback function
                 if (err) {              
-                    req.flash("Please log in")  //if error, gives flash msg, clears cookie, reopens login page
+                    req.flash("notice","Please log in") 
                     res.clearCookie("jwt")
-                    return res.redirect("/account/login")   //TODO does this give sticky for username?
+                    return res.redirect("/account/login")
                 }
-                res.locals.accountData = accountData    //if no error captures accountData and sets to response.locals object to be forwarded on through rest of the request-response cycle
-                res.locals.loggedin = 1     //logged in flag (1=true)
-                next()      //tells express server to move on to next step in app flow
+                //console.table(accountData)
+                res.locals.accountData = accountData 
+                res.locals.loggedin = true     //logged in flag (1=true)
+                res.locals.fName = accountData.account_firstname
+                res.locals.accountType = accountData.account_type
+                res.locals.accountId = accountData.account_id
+                next()
             })
     } else {
+        res.locals.loggedin = false
+        res.locals.fName = ""
+        res.locals.accountType = ""
         next()
     }
 }
@@ -204,8 +212,21 @@ Util.checkLogin = (req, res, next) => {
     if (res.locals.loggedin) {      //check if login flag is set (jwt)
         next()
     } else {
-    req.flash("notice", "Please log in.")   //if not, force them to login
-    return res.redirect("/account/login")
+        req.flash("notice", "Please log in.")   //if not, force them to login
+        return res.redirect("/account/login")
+    }
+}
+
+
+/* ****************************************
+ *  Check Authorization
+ * ************************************ */
+Util.checkAuthN = (req, res, next) => {
+    if (res.locals.accountType !== "Admin" && res.locals.accountType !== "Employee") {
+        req.flash("notice",`Insufficient Credentials.  Please login with Admin or Employee account`)
+        return res.redirect("/account/login")
+    }else{
+        next()
     }
 }
 

@@ -120,7 +120,6 @@ async function updateInventory(
   }
 }
 
-//TODO TEAM - STEP 5  (make sure to export)
 /* ***************************
  * DELETE Inventory
  * ************************** */

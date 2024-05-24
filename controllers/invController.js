@@ -4,7 +4,7 @@ const utilities = require("../utilities/")                      //bring utilitie
 const invCont = {}                                              //create empty obj
 
 
-//! INVENTORY CLASSIFICATION VIEW
+//+ INVENTORY CLASSIFICATION VIEW
 /* ***************************
  *  Build inventory by classification view for /inv/type/x
  * ************************** */
@@ -22,12 +22,12 @@ invCont.buildByClassificationId = async function (req, res, next) {             
     })
 }
 
-//! INVENTORY DETAIL VIEW
+//+ INVENTORY DETAIL VIEW
 /* ***************************
  *  Build details by inventory view for /inv/detail/x
  * ***************************/
 invCont.buildByInventoryId = async function (req, res, next) {
-    
+
     //to force an error 500 for the assignment
     //trigger off an inventory_id of 2 (the batmobile)
     if (req.params.inventoryId == 2){
@@ -52,17 +52,14 @@ invCont.buildByInventoryId = async function (req, res, next) {
     })
 }
 
-//! MANAGEMENT VIEW
+//+ MANAGEMENT VIEW
 /* ***************************
  * Build management page - add classification & inventory for /inv/
  * ***************************/
 invCont.buildManagement = async function(req,res){
-    //const data = await invModel.getManagement()   //not needed
-    const links = await utilities.buildManagementDetail()
     const nav = await utilities.getNav()
-
+    const links = await utilities.buildManagementDetail()
     const classSelect = await utilities.buildClassificationList()
-
 
     res.render("./inventory/management", {
         title: "Vehicle Management", 
@@ -71,6 +68,7 @@ invCont.buildManagement = async function(req,res){
         classSelect,
         errors: null
     })
+
 }
 /* ***************************
  *  Return Inventory by Classification As JSON FOR MANAGEMENT VIEW CLASSIFICATION DROP DOWN
@@ -85,15 +83,16 @@ invCont.getInventoryJSON = async (req, res, next) => {
     }
 }
 
-//! EDIT INVENTORY 'MODIFY' (FROM MANAGEMENT VIEW)
+//+ EDIT INVENTORY 'MODIFY' (FROM MANAGEMENT VIEW)
 /* ***************************
  *  Modify existing inventory.  Builds 'edit inventory' view
  * ***************************/
 invCont.buildEditInventory = async function(req,res,next){
     //approach is collect all the db info I need, then pass to a utility to build the html needed for the form
     //take advantage of existing function used for getNav
-    const inventory_id = parseInt(req.params.inventory_id)
+    console.log("enter buildEditInventory")
     const nav = await utilities.getNav()
+    const inventory_id = parseInt(req.params.inventory_id)
     let data = await invModel.getDetailByInventoryId(inventory_id)    //get inv details.  same as inventory detail view
     data = data[0]                                                      //had to do this to get 1st item in the array
     const inv_id = data.inv_id
@@ -162,68 +161,49 @@ invCont.updateInventory = async function (req,res,next){
         inv_color,
         classification_id
     )
-    
-    //?  Might need to make these go away??
-    //cleanup the variables a bit to ensure make/model is always clean format
-    //inv_make = utilities.capitalize(updateResult.inv_make)
-    //inv_model = utilities.capitalize(updateResult.inv_model)
-    //inv_color = utilities.capitalize(updateResult.inv_color)
     const itemName = inv_make + " " + inv_model
     //determine if result was recieved
     if (updateResult){
-        //const itemName = inv_make + " " + inv_model
-        //const links = await utilities.buildManagementDetail()
         req.flash(
             "notice",
             `${itemName} successfully updated`
         )
-        //! CHECK THIS  I think we need to pass in nav, etc.  oh, maybe cause it's redirect it starts the process over for us...
         res.redirect("/inv/")
     }else{
         const classSelect = await utilities.buildClassificationList(classification_id)
         req.flash("notice", `${itemName} not updated.  Invalid Entry  <br>Please correct and resubmit`)
-        res.status(501).render("inventory/edit-inventory", {
-            title: "Edit " + itemName ,
-            nav,
-            classSelect: classSelect,
-            inv_id, classification_id, inv_year, inv_make, inv_model, inv_description, inv_image, inv_thumbnail, inv_price, inv_miles, inv_color,
-            errors: null
-        })
+        res.status(501).redirect(`/inv/edit/${inv_id}`)
+
+        //res.status(501).render(`inventory/edit/${inv_id}`, {
+        //res.status(501).render("inventory/edit-inventory"),{
+        //    title: "Edit " + itemName ,
+        //    nav,
+        //    classSelect: classSelect,
+        //    inv_id, classification_id, inv_year, inv_make, inv_model, inv_description, inv_image, inv_thumbnail, inv_price, inv_miles, inv_color,
+        //    errors: null
+        //}
     }
 }
 
-//TODO TEAM - STEP 3.  Next Step is build the delete function (post)
-//! DELETE INVENTORY (from managmeent view)
+//+ DELETE INVENTORY (from managmeent view)
 /* ***************************
  *  DELETE inventory.  Builds 'delete inventory' view
  * ***************************/
 invCont.buildDeleteInventory = async function(req,res,next){
-    //approach is collect all the db info I need, then pass to a utility to build the html needed for the form
-    //take advantage of existing function used for getNav
-    const inventory_id = parseInt(req.params.inventory_id)
     const nav = await utilities.getNav()
+    const inventory_id = parseInt(req.params.inventory_id)
     let data = await invModel.getDetailByInventoryId(inventory_id)    //get inv details.  same as inventory detail view
     data = data[0]                                                      //had to do this to get 1st item in the array
     const inv_id = data.inv_id
     const inv_make = data.inv_make
     const inv_model = data.inv_model
     const inv_year = data.inv_year
-    const inv_description = data.inv_description
-    const inv_image = data.inv_image
-    const inv_thumbnail = data.inv_thumbnail
     const inv_price = data.inv_price
-    const inv_miles = data.inv_miles
-    const inv_color = data.inv_color
-    const classification_id = data.classification_id
-
-    //const classSelect = await utilities.buildClassificationList(classification_id)     //modify to pass in classification_id
-    const itemName = `${data.inv_make} ${data.inv_model}`               //creating a name to pass back for title/h1
-
+    const itemName = `${data.inv_make} ${data.inv_model}`        //creating a name to pass back for title/h1
+    
     res.render("./inventory/delete-confirm", {
         title: "Delete " + itemName + "!", 
-        nav, 
-        //inventory_id,
-        //classSelect,
+        nav,
         errors: null,
         inv_id,
         inv_make,
@@ -232,23 +212,21 @@ invCont.buildDeleteInventory = async function(req,res,next){
         inv_price,
     })
 }
-//TODO TEAM - STEP 4.  Next step go to model
 /* ***************************
  * DELETE INVENTORY DATA (copied from udpateInventory)
  * ***************************/
 invCont.deleteInventory = async function (req,res,next){
-    let nav = await utilities.getNav()
+    let nav = await utilities.getNav()       
     const inv_id = parseInt(req.body.inv_id)
-    console.log("inventory id = " + inv_id)
+    //console.log("inventory id = " + inv_id)
     const deleteResult = await invModel.deleteInvModel(inv_id)
     console.log("deleteResult to follow")
     console.table(deleteResult)
-
-    //?  NOT SURE ABOUT THIS...
+    
     const inv_make = req.body.inv_make
     const inv_model = req.body.inv_model
     const itemName = inv_make + " " + inv_model
-
+    
     //determine if result was recieved
     if (deleteResult){
         req.flash(
@@ -267,15 +245,12 @@ invCont.deleteInventory = async function (req,res,next){
     }
 }
 
-//! ADD NEW CLASSIFICATION VIEW & POST
+//+ ADD NEW CLASSIFICATION VIEW & POST
 /* ***************************
  *  Build Add Classification Form Page for /inv/add-classification
  * ***************************/
 invCont.buildAddClassification = async function(req,res){
-
-    //const form = await utilities.buildAddClassificationForm()
     const nav = await utilities.getNav()
-
     res.render("./inventory/add-classification", {
         title: "Add New Classification", 
         nav, 
@@ -291,12 +266,13 @@ invCont.addClassification = async function (req, res){
     classification_name = utilities.capitalize(classification_name)
     console.log(classification_name)
     const addClassResult = await invModel.addClassification(classification_name)
-
+    
     //determine if result was recieved
     if (addClassResult){
         nav = await utilities.getNav() //rebuilding the nav bar to reflect the new classification
+        const classSelect = await utilities.buildClassificationList()
         const links = await utilities.buildManagementDetail()
-
+        
         req.flash(
             "notice",
             `The ${classification_name} Classification successfully added.`
@@ -306,6 +282,7 @@ invCont.addClassification = async function (req, res){
             nav,
             links,
             classification_name,
+            classSelect,
             errors: null
         })
     }
@@ -317,20 +294,17 @@ invCont.addClassification = async function (req, res){
             classification_name,
             errors: null
         })
-    }
-
+    }        
 }
 
-//! ADD NEW INVENTORY VIEW & POST
+//+ ADD NEW INVENTORY VIEW & POST
 /* ***************************
  *  Build add-inventory (add vehicle) form view for /inv/add-inventory
  * ***************************/
 invCont.buildAddInventory = async function(req,res,next){
-    //approach is collect all the db info I need, then pass to a utility to build the html needed for the form
-    //take advantage of existing function used for getNav
-    const classSelect = await utilities.buildClassificationList()
     const nav = await utilities.getNav()
-
+    const classSelect = await utilities.buildClassificationList()
+    
     res.render("./inventory/add-inventory", {
         title: "Add New Inventory", 
         nav, 
@@ -342,22 +316,20 @@ invCont.buildAddInventory = async function(req,res,next){
  *  Process & Post add-inventory (add vehicle) form for /inv/add-inventory
  * ***************************/
 invCont.addInventory = async function (req,res,next){
-    let classSelect = await utilities.buildClassificationList()
     const nav = await utilities.getNav()
+    let classSelect = await utilities.buildClassificationList()
     //collect all the variables from the form (sent via the body)
     let {classification_id, inv_year, inv_make, inv_model, inv_description, inv_image, inv_thumbnail, inv_price, inv_miles, inv_color} = req.body
     //cleanup the variables a bit to ensure make/model is always clean format
     inv_make = utilities.capitalize(inv_make)
     inv_model = utilities.capitalize(inv_model)
     inv_color = utilities.capitalize(inv_color)
-
     //run model function passing in the variables
     const addInventoryResult = await invModel.addInventory(classification_id, inv_year, inv_make, inv_model, inv_description, inv_image, inv_thumbnail, inv_price, inv_miles, inv_color)
-
     //determine if result was recieved
     if (addInventoryResult){
         const links = await utilities.buildManagementDetail()
-
+        
         req.flash(
             "notice",
             `${inv_year} ${inv_make} ${inv_model} successfully added`

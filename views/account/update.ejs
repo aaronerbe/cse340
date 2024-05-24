@@ -1,9 +1,9 @@
 <!-- Content Heading -->
-<% if (title) { %>              <!-- EJS code block to contain JS if structure to see if title var exists -->
-    <h1 class="title"><%= title %></h1>       <!-- if 'title' exists, display it within an h1 -->
+<% if (title) { %>              
+    <h1 class="title"><%= title %></h1>       
     <% } else {                   
     res.redirect('/')           
-} %>                            <!-- redirects the response object to the default index route, to deliver the home view -->
+} %>                            
 
 <!-- Message -->
 <%- messages() %>
@@ -18,32 +18,67 @@
     </ul>
 <% } %>
 
-<!-- Login Display -->
-<!-- rather than using a utility, building the html direclty here -->
+<!-- + Assignement 5 -->
 
-<div id="register-container">
-    <form class="register-form forms" action="/account/register" method="post">
+<div id="updateAccount-container">
+    <!-- TODO  what action? -->
+    <h2 class="updateAccount-title">Change Account Information</h2>
+    <form class="update-form updateForm forms" action="/account/update-account/<%= accountId %>" method="post">
+
         <div class="fname-input field">
             <label for="fname">First Name:
                 <input type="text" id="fname" name="account_firstname" placeholder="" required value="<%= locals.account_firstname %>">
             </label>
         </div>
+        
         <div class="lname-input field">
             <label for="lname">Last Name:
                 <input type="text" id="lname" name="account_lastname" minlength="2" placeholder="" required value="<%= locals.account_lastname %>">  
             </label>
         </div>
+        
         <div class="email-input field">
             <label for="email">Email:
                 <input type="email" id="email" name="account_email" placeholder="" required value="<%= locals.account_email %>">   
             </label>
         </div>
+        
+        <button class="update-button button" type="submit" disabled>Update Account</button>
+        
+        <input type="hidden" name="account_id"
+        <% if(account_id) { %> value="<%= account_id %>"
+        <% } %>>
+    </form>
+</div>
+
+<div id="changePassword-container">
+    <!-- TODO  what action? -->
+    <h2 class="centered-title">Change Password</h2>
+    <form class="change-password-form updateForm forms" action="/account/update-password/<%= accountId %>" method="post">
+        <p class="centered-title">Careful!  This will permanently change your password.  </p>
         <div class="password-input field" id="pwContainer">
             <label for="pw_input">Password:
                 <input type="password" name="account_password" id="pw_input" pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{12,}$" required title="Minimum 12 characters.  Contain at least 1 capital letter, 1 number and 1 special character.">
             </label>
             <img id="pwBtn" src="/images/site/show_pass.svg" alt="show/hide password icon">
         </div>
-        <button class="register-button button" type="submit">Register</button>
+
+        <button class="update-button button" type="submit" disabled>Change Password</button>
+        
+        <input type="hidden" name="account_id"
+        <% if(account_id) { %> value="<%= account_id %>"
+        <% } %>>
+
+        <input type="hidden" name="account_firstname"
+        <% if(account_firstname) { %> value="<%= account_firstname %>"
+        <% } %>>
+
+        <input type="hidden" name="account_lastname"
+        <% if(account_lastname) { %> value="<%= account_lastname %>"
+        <% } %>>
+
     </form>
 </div>
+
+
+<script src="../../js/update.js"></script>

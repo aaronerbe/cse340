@@ -8,13 +8,14 @@
 <!-- Message -->
 <%- messages() %>
 
-<!-- TODO Don't forget to do client side validation as well -->
-<% if (errors) { %>             <!-- ejs if block to check if error var exists and is not null -->
-    <ul class="notice">         <!-- create unordered list w/ class for styling -->
-<% errors.array().forEach(error => { %>     <!-- treat errors var as array and loop through.  each error is sent into a callback function -->
-    <li><%= error.msg %></li>
-<%  }) %>
-</ul>
+<% if (errors) { %>             
+    <ul class="notice">         
+        <% errors.array().forEach(error => { %>     
+            <% if (!error.msg.startsWith('Invalid value')) { %>    
+                <li><%- error.msg %></li>
+            <% } %>
+        <% }) %>
+    </ul>
 <% } %>
 
 <!-- Login Display -->
