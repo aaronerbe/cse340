@@ -32,7 +32,7 @@ async function checkExistingEmail(account_email){
 /* *****************************
 * Return account data using email address
 * ***************************** */
-async function getAccountByEmail (account_email) {
+async function getAccountByEmail(account_email) {
     try {
     //create the query to be used, passing in the account_email
     const result = await pool.query(
@@ -47,7 +47,7 @@ async function getAccountByEmail (account_email) {
 /* *****************************
 * Return account data using account_id
 * ***************************** */
-async function getAccountByID (account_id) {
+async function getAccountByID(account_id) {
     try {
     //create the query to be used, passing in the account_id
     const result = await pool.query(

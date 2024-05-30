@@ -103,6 +103,83 @@ Util.buildClassificationDetail = async function(data){
     return detail
 }
 
+Util.buildInventoryDetailReviews = async function(reviewData, loggedin, fName, lName){
+    let reviewList = ''  // Initialize reviewList as an empty string
+        reviewList = '<div class = "inv-reviews-container reviews-container">'
+            reviewList += '<h2 class="subtitle">Customer Reviews</h2>'
+    if (reviewData.length > 0){
+            reviewList += '<ul id="inv-reviews">'
+
+            for (const review of reviewData) {
+                try {
+                    // Fetch account data to build username below
+                    const accountData = await accountModel.getAccountByID(review.account_id)
+                    const fname = accountData.account_firstname
+                    const lname = accountData.account_lastname
+                    const username = fname[0]+lname
+
+                    reviewList += '<li>'
+                        reviewList += '<div class="inv-review-card review-card">'
+
+                            reviewList += '<div class="inv-review-card-header review-card-header">'
+                            //todo format review date
+                                reviewList += `<p><span class="review-username">${username}</span> wrote on ${new Date(review.review_date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>`
+                            reviewList += '</div>'
+                        
+                            reviewList += '<div class="inv-review-card-text review-card-text">'
+                                reviewList += '<p>' + review.review_text + '</p>'
+                            reviewList += '</div>'
+                        
+                        reviewList += '</div>'
+                    reviewList += '</li>'
+                } catch (error) {
+                    console.error(`Error fetching account data for account ID ${review.account_id}:`, error)
+                }
+            }
+            reviewList += '</ul>'
+        } else {
+            reviewList += '<p class="review-notice">Be the first to review this vehicle</p>'
+        }
+    reviewList += '</div>'
+    reviewList += await Util.buildSubmitReviewForm(loggedin, fName, lName)
+    return reviewList
+}
+
+Util.buildSubmitReviewForm = async function(loggedin, fName, lName){
+    let form = ''
+    if(loggedin){
+        const username = fName[0]+lName
+        //todo handle submission of form
+        form = `
+            
+            <div id="submit-new-review-form-container">
+                <form class="submit-review-form forms" action="/inv/submit-review" method="post"> 
+                    <h2 class="subtitle-centered">Submit a New Review</h2>
+                    <div class="submit-review-username field">
+                        <label for="submit-review_username">Screen Name:
+                            <input type="text" id="submit-review_username" name="submit-review_username" placeholder="" title="Screen Name" required pattern="^[A-Za-z]+$"  value="${username}" readonly>
+                        </label>
+                    </div>
+                
+                    <div class="submit-review-text field">
+                        <label for="submit-review-text">Review:
+                            <textarea id="submit-review-text" name="submit-review-text" placeholder="Submit a review of the vehicle" required minlength="1" rows="4"></textarea>
+                        </label>
+                    </div>
+                    <button class="submit-review-button button" type="submit">Submit Review</button>
+                </form>
+            </div>`
+
+
+
+
+    } else{
+        form = `<p>You must <a href="/account/login" title="login">login</a> to write a review.</p>`
+    }
+    return form
+
+}
+
 /* **************************************
 * Build the Management view HTML for inv/
 * **************************************/
@@ -191,8 +268,9 @@ Util.checkJWTToken = (req, res, next) => {
                 }
                 //console.table(accountData)
                 res.locals.accountData = accountData 
-                res.locals.loggedin = true     //logged in flag (1=true)
+                res.locals.loggedin = true
                 res.locals.fName = accountData.account_firstname
+                res.locals.lName = accountData.account_lastname
                 res.locals.accountType = accountData.account_type
                 res.locals.accountId = accountData.account_id
                 next()
@@ -200,6 +278,7 @@ Util.checkJWTToken = (req, res, next) => {
     } else {
         res.locals.loggedin = false
         res.locals.fName = ""
+        res.locals.lName = ""
         res.locals.accountType = ""
         next()
     }

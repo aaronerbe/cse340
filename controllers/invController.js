@@ -39,6 +39,13 @@ invCont.buildByInventoryId = async function (req, res, next) {
     const inventory_id = req.params.inventoryId
     const data = await invModel.getDetailByInventoryId(inventory_id)             //calls getInventoryByInventoryId from model.  sends it the above request object
     const detail = await utilities.buildClassificationDetail(data)                  //utility function to build the details based on Data array.  Will contian html string
+    //! get review data
+    const reviewData = await invModel.getReviewsByInventoryId(inventory_id)
+    const reviews = await utilities.buildInventoryDetailReviews(reviewData, res.locals.loggedin, res.locals.fName, res.locals.lName)
+
+    console.log('logged in state: ' + res.locals.loggedin)
+
+
     let nav = await utilities.getNav()                                              //calls our util to build the nav bar for the page
     const year = data[0].inv_year                                                //extracts the inventory year
     const make = data[0].inv_make                                                //extracts the inventory make 
@@ -48,6 +55,7 @@ invCont.buildByInventoryId = async function (req, res, next) {
         title: `${year} ${make} ${model}`,                                 //build the title e.g. 1990 Ford Bronco
         nav,                                                                        //build the nav bar
         detail,                                                                      //build the details into the view
+        reviews,
         errors: null
     })
 }

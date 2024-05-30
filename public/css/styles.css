@@ -14,6 +14,7 @@
     --transparent-secondary-color:rgba(5, 44, 111, 0.9);
     --highlight-color: #FF9B42;
     --light-color:  #EBF0F0;
+    --notice-color: #92140C;
 
 }
 
@@ -43,7 +44,7 @@ a{
   padding: 2rem;
   /*text-align: center;*/
   font-size: clamp(1.25rem, 1.5vw, 1.5rem);
-  color: #92140C;
+  color: var(--notice-color);
   font-weight: 700;
   width: 80%;
 }
@@ -120,6 +121,13 @@ h1, h2{
 }
 #confirm-delete-title,  .centered-title{
   text-align:center;
+}
+.subtitle{
+  font-size: clamp(1.5rem, 3vw, 1.75rem);
+}
+.subtitle-centered{
+  font-size: clamp(1.5rem, 3vw, 1.75rem);
+  text-align: center;
 }
 
 /* PRODUCT HIGHLIGHT */
@@ -312,6 +320,35 @@ footer a{
   font-size: clamp(1.25rem, 1.5vw, 1.5rem);
 }
 
+/* DETAILS REVIEWS */
+.reviews-container{
+  margin: 3rem auto;
+}
+.inv-reviews{
+  margin: 3rem auto;
+}
+.review-card{
+  max-width: 80%;
+  margin: 1rem 0
+}
+.review-card p{
+  padding: .25rem;
+  margin: 0;
+}
+.review-card-header{
+  border-bottom: solid 2px black; 
+}
+.review-username{
+  font-weight: bold;
+}
+.review-notice{
+  color: var(--notice-color)
+}
+#submit-review-text{
+  resize: vertical;
+  width: 100%;
+  border-radius: 4px;
+}
 
 
 /* forms */
@@ -358,11 +395,11 @@ input, #inv_description, select{
   /*box-sizing: border-box;*/
   margin: 0;
 }
-input:required:invalid, #inv_description:required:invalid, select:required:invalid{
-  border-left: 6px solid #B22222
+input:required:invalid, #inv_description:required:invalid, select:required:invalid, textarea:required:invalid{
+  border-left: 3px solid #B22222
 }
-input:required:valid, #inv_description:required:valid, select:required:valid{
-  border-left: 6px solid green;
+input:required:valid, #inv_description:required:valid, select:required:valid, textarea:required:valid{
+  border-left: 3px solid green;
 }
 #inv_description{
   resize: vertical;
@@ -460,6 +497,7 @@ button:active{
   padding: .5rem;
   text-align: left;
 }
+
 
 
 @media screen and (min-width: 800px) {

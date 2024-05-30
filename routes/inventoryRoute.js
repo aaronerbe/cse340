@@ -13,6 +13,7 @@ router.get("/type/:classificationId", utilities.handleErrors(invController.build
 //inventory detail by inventory id
 router.get("/detail/:inventoryId", utilities.handleErrors(invController.buildByInventoryId));
 
+
 //+ MANAGE INVENTORY VIEW
 //Manage Inventory View.  
 router.get("/", 
