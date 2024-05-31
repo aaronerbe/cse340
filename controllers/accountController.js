@@ -285,10 +285,15 @@ async function buildEditReview(req, res, next, isEdit=true){
             review_text, 
             account_id, 
             inv_id)  //send isEdit boolean
-        
+        let customTitle = ""
+        if(isEdit){
+            customTitle = "Edit Review"
+        }else{
+            customTitle = "Delete Review"
+        }
         //todo customize the title for the action edit or delete...
         res.render("./account/edit-review",{
-            title: "Edit Review",
+            title: customTitle,
             nav,
             reviewDetails,
             errors: null,
