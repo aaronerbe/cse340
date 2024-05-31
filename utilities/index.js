@@ -1,5 +1,6 @@
 const invModel = require("../models/inventory-model")
 const accountModel = require("../models/account-model")
+const reviewModel = require("../models/account-model")
 const Util = {}
 //forJWT
 const jwt = require("jsonwebtoken")
@@ -103,7 +104,7 @@ Util.buildClassificationDetail = async function(data){
     return detail
 }
 
-Util.buildInventoryDetailReviews = async function(reviewData, loggedin, fName, lName, inventory_id, account_id) {
+Util.buildInventoryDetailReviews = async function(reviewData) {
     let reviewList = ''  // Initialize reviewList as an empty string
     reviewList = '<div class="inv-reviews-container reviews-container">'
     reviewList += '<h2 class="subtitle">Customer Reviews</h2>'
@@ -123,7 +124,7 @@ Util.buildInventoryDetailReviews = async function(reviewData, loggedin, fName, l
                 
                 reviewList += '<div class="inv-review-card-text review-card-text">'
                 reviewList += `<p><span class="review-username">${username}</span> wrote on ${new Date(review.review_date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>`
-                reviewList += '<p>' + review.review_text + '</p>'
+                reviewList += '<p> &nbsp; &nbsp; &nbsp; &nbsp;- ' + review.review_text + '</p>'
                 reviewList += '</div>'
 
                 reviewList += '</div>'
@@ -138,51 +139,8 @@ Util.buildInventoryDetailReviews = async function(reviewData, loggedin, fName, l
         reviewList += '<p class="review-notice">Be the first to review this vehicle</p>'
     }
     reviewList += '</div>'
-    reviewList += await Util.buildSubmitReviewForm(loggedin, fName, lName, inventory_id, account_id)
     return reviewList
 }
-
-
-Util.buildSubmitReviewForm = async function(loggedin, fName, lName, inventory_id, account_id){
-    let form = ''
-    if(loggedin){
-        const username = fName[0]+lName
-        //todo handle submission of form
-        form = `
-            
-            <div id="submit-new-review-form-container">
-                <form class="submit-review-form forms" action="/inv/submit-review/${inventory_id}" method="post"> 
-                    <h2 class="subtitle-centered">Submit a New Review</h2>
-                    <div class="submit-review-username field">
-                        <label for="username">Screen Name:
-                            <input type="text" id="username" name="username" placeholder="" title="Screen Name" required pattern="^[A-Za-z]+$"  value="${username}" readonly>
-                        </label>
-                    </div>
-                
-                    <div class="submit-review-text field">
-                        <label for="review_text">Review:
-                            <textarea id="review_text" name="review_text" placeholder="Submit a review of the vehicle" required minlength="1" rows="4"></textarea>
-                        </label>
-                    </div>
-                    <button class="submit-review-button button" type="submit">Submit Review</button>
-
-                    <input type="hidden" name="inv_id" value="${inventory_id}">
-                    
-                    <input type="hidden" name="account_id" value="${account_id}">
-
-                </form>
-            </div>`
-
-
-
-
-    } else{
-        form = `<p>You must <a href="/account/login" title="login">login</a> to write a review.</p>`
-    }
-    return form
-
-}
-
 
 /* **************************************
 * Build the Management view HTML for inv/
@@ -200,38 +158,51 @@ Util.buildManagementDetail = async function(data){
 }
 
 //+ Build Review List by User
-
 Util.buildUserReviewList = async function(reviewData) {
-    let reviewList = '' 
-    reviewList = '<div class="mgmt-reviews-container reviews-container">'
-    reviewList += '<h2 class="subtitle">My Reviews</h2>'
+    let reviewList = '';
+    reviewList = '<div class="mgmt-reviews-container reviews-container">';
+    reviewList += '<h2 class="subtitle">My Reviews</h2>';
     if (reviewData.length > 0) {
-        reviewList += '<ol id="mgmt-reviews">'
+        reviewList += '<ol id="mgmt-reviews">';
         for (const review of reviewData) {
-            reviewList += '<li>'
-            reviewList += '<div class="mgmt-review-card review-card">'
-            reviewList += '<div class="review-content">'
-            reviewList += '<div class="mgmt-review-card-text review-card-text">'
-            reviewList += `<p>${review.review_text} on ${new Date(review.review_date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>`
-            reviewList += '</div>'
-            reviewList += '<div class="review-actions">'
-            reviewList += `<a href="/account/edit-review/${review.review_id}">EDIT</a>&nbsp; | &nbsp;<a href="/account/delete-review/${review.review_id}">DELETE</a>`
-            reviewList += '</div>'
-            reviewList += '</div>'
-            reviewList += '</div>'
-            reviewList += '</li>'
+            const invDetails = await invModel.getDetailByInventoryId(review.inv_id);
+            const invInfo = `${invDetails[0].inv_year} ${invDetails[0].inv_make} ${invDetails[0].inv_model}`;
+            reviewList += '<li>';
+            reviewList += '<div class="mgmt-review-card review-card">';
+            
+            // First row with invInfo and actions
+            reviewList += '<div class="review-row">';
+            reviewList += '<div class="mgmt-review-meta">';
+            reviewList += `<p>${invInfo} on ${new Date(review.review_date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>`;
+            reviewList += '</div>';
+            reviewList += '<div class="review-actions">';
+            reviewList += `<a href="/account/edit-review/${review.review_id}">EDIT</a>&nbsp;|&nbsp;<a href="/account/delete-review/${review.review_id}">DELETE</a>`;
+            reviewList += '</div>';
+            reviewList += '</div>';
+            
+            // Second row with review text
+            reviewList += '<div class="review-row">';
+            reviewList += '<div class="review-content">';
+            reviewList += '<div class="mgmt-review-card-text review-card-text">';
+            reviewList += `<p>&nbsp; &nbsp; &nbsp; &nbsp;- ${review.review_text}</p>`;
+            reviewList += '</div>';
+            reviewList += '</div>';
+            reviewList += '</div>';
+
+            reviewList += '</div>';
+            reviewList += '</li>';
         }
-        reviewList += '</ol>'
+        reviewList += '</ol>';
     } else {
-        reviewList += '<p class="no-reviews">No Reviews Yet</p>'
+        reviewList += '<p class="no-reviews">No Reviews Yet</p>';
     }
-    reviewList += '</div>'
-    return reviewList
-}
+    reviewList += '</div>';
+    return reviewList;
+};
+
 
 //+ Build Edit/Delete Form 
 Util.buildEditReviewForm = async function(isEdit, review_id, review_date, review_text, account_id, inv_id){
-    //todo build this form
     let form = ''
     let action = ""
     let label = ""
@@ -247,10 +218,7 @@ Util.buildEditReviewForm = async function(isEdit, review_id, review_date, review
         label = "Delete"
         readonly = "readonly"
     }
-
-        //todo handle submission of form
     form = `
-        
         <div id="${label}-review-form-container">
             <form class="${label}-review-form forms" action="${action}" method="post"> 
                 <h2 class="subtitle-centered">${label} Review</h2>
@@ -268,8 +236,8 @@ Util.buildEditReviewForm = async function(isEdit, review_id, review_date, review
                 <button class="${label}-review-button button" type="submit">${label} Review</button>
 
                 <input type="hidden" name="inv_id" value="${inv_id}">
-                
                 <input type="hidden" name="account_id" value="${account_id}">
+                <input type="hidden" name="review_id" value="${review_id}">
 
             </form>
         </div>`

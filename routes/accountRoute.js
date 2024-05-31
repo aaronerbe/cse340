@@ -4,6 +4,8 @@ const router = new express.Router()     //Create new router object
 const accountController = require("../controllers/accountController")   //import the account controller
 const utilities = require("../utilities/")   //bring utitilies into scope
 const regValidate = require('../utilities/account-validation')
+const reviewValidate = require('../utilities/review-validation')
+
 
 
 //Route needed to build account page
@@ -26,27 +28,22 @@ router.get("/",
 
 //+ Routes for Edit and Delete Reviews from Management Page
 //+ EDIT
-//todo need to build controllers for all of these
-//todo not sure checklogin and check authn are required
-//todo need to add validation to these
 router.get("/edit-review/:review_id",
     utilities.handleErrors(utilities.checkLogin),
-    utilities.handleErrors(utilities.checkAuthN),
     utilities.handleErrors((req, res, next) => accountController.buildEditReview(req, res, next, true))
 )
 router.post("/edit-review/:review_id",
     utilities.handleErrors(utilities.checkLogin),
-    utilities.handleErrors(utilities.checkAuthN),
+    reviewValidate.reviewRules(),
+    utilities.handleErrors(reviewValidate.checkEditReviewTextData),  
     utilities.handleErrors(accountController.editReview)
 )
 //+ DELETE
 router.get("/delete-review/:review_id",
     utilities.handleErrors(utilities.checkLogin),
-    utilities.handleErrors(utilities.checkAuthN),
     utilities.handleErrors((req, res, next) => accountController.buildEditReview(req, res, next, false)))
 router.post("/delete-review/:review_id",
     utilities.handleErrors(utilities.checkLogin),
-    utilities.handleErrors(utilities.checkAuthN),
     utilities.handleErrors(accountController.deleteReview)
 )
 

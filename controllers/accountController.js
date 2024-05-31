@@ -1,6 +1,7 @@
 //Required
 const utilities = require("../utilities/")
 const accountModel = require("../models/account-model") 
+const reviewModel = require("../models/review-model")
 const bcrypt = require("bcryptjs")
 //adding for jwt capability - missing from instructions but I think this will work
 const jwt = require('jsonwebtoken')
@@ -129,7 +130,7 @@ async function accountLogin(req, res) {
 async function buildManagement(req, res, next) {     
     let nav = await utilities.getNav()         
     const account_id = res.locals.accountId
-    const reviewData = await accountModel.getReviewsByAccountId(account_id)
+    const reviewData = await reviewModel.getReviewsByAccountId(parseInt(account_id))
     const reviews = await utilities.buildUserReviewList(reviewData)
 
     res.render("account/management", {
@@ -269,7 +270,7 @@ async function buildEditReview(req, res, next, isEdit=true){
     //! note isEdit determines if this is for an Edit or Delete view
     const nav = await utilities.getNav()
     const review_id = parseInt(req.params.review_id)
-    let data = await accountModel.getReviewByReviewId(review_id)
+    let data = await reviewModel.getReviewByReviewId(review_id)
     const review_text = data.review_text
     const review_date = data.review_date
     const account_id = data.account_id
@@ -309,19 +310,11 @@ async function editReview(req, res, next){
         review_text,
         account_id,
     } = req.body
-
-    console.log("review_id: " +review_id)
-    console.log("review_text: "+ review_text)
-    console.log("account_id: " + account_id)
-
-
-    const updateReview = await accountModel.updateReview(
+    const updateReview = await reviewModel.updateReview(
         review_text,
         review_id,
         account_id,
     )
-    console.table(updateReview)
-
     if (updateReview){
         req.flash(
             "notice",
@@ -349,7 +342,7 @@ async function deleteReview(req, res, next){
     console.log("review_text: " + review_text);
     console.log("account_id: " + account_id);
 
-    const deleteResult = await accountModel.deleteReview(
+    const deleteResult = await reviewModel.deleteReview(
         review_id,
         account_id
     );

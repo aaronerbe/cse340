@@ -1,4 +1,5 @@
 const invModel = require("../models/inventory-model")           //bring inventory-model.js into scope, store it's functionality into invModel
+const reviewModel = require("../models/review-model")
 const utilities = require("../utilities/")                      //bring utilities into scope (which brings index.js under it into scope)
 
 const invCont = {}                                              //create empty obj
@@ -36,13 +37,18 @@ invCont.buildByInventoryId = async function (req, res, next) {
     }
     
     //builds requests command that will be sent to the model.  req object that is sent.  params is an express function that represents the data that was passed in from the client.
-    const inventory_id = req.params.inventoryId
+    const inv_id = req.params.inventoryId
     const account_id = res.locals.accountId
-    const data = await invModel.getDetailByInventoryId(inventory_id)             //calls getInventoryByInventoryId from model.  sends it the above request object
-    const detail = await utilities.buildClassificationDetail(data)                  //utility function to build the details based on Data array.  Will contian html string
+    const loggedin = res.locals.loggedin
+    const fName = res.locals.fName
+    const lName = res.locals.lName
+    const username = fName[0]+lName
+    const data = await invModel.getDetailByInventoryId(inv_id)             
+    const detail = await utilities.buildClassificationDetail(data) 
     //+ get & build review data
-    const reviewData = await invModel.getReviewsByInventoryId(inventory_id)
-    const reviews = await utilities.buildInventoryDetailReviews(reviewData, res.locals.loggedin, res.locals.fName, res.locals.lName, inventory_id, account_id)
+    const reviewData = await reviewModel.getReviewsByInventoryId(inv_id)
+    //todo, prob dont need to send loggedin state anymore.  maybe others to clean up??
+    const reviews = await utilities.buildInventoryDetailReviews(reviewData)
 
     let nav = await utilities.getNav()                                              //calls our util to build the nav bar for the page
     const year = data[0].inv_year                                                //extracts the inventory year
@@ -54,6 +60,11 @@ invCont.buildByInventoryId = async function (req, res, next) {
         nav,                                                                        //build the nav bar
         detail,                                                                      //build the details into the view
         reviews,
+        loggedin,
+        account_id,
+        inv_id,
+        username,
+        review_text: null,
         errors: null
     })
 }
@@ -70,7 +81,7 @@ invCont.postNewReview = async function (req, res, next){
         } = req.body
     //const classSelect = await utilities.buildClassificationList()
     //run model function passing in the variables
-    const addResult = await invModel.addReview(
+    const addResult = await reviewModel.addReview(
         inv_id,
         account_id,
         review_text,

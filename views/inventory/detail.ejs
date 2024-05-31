@@ -6,12 +6,50 @@
 } %>                            <!-- redirects the response object to the default index route, to deliver the home view -->
 
 <!-- Message -->
-<%# messages() %>
+<%- messages() %>
+
+<% if (errors) { %>             
+    <ul class="notice">         
+        <% errors.array().forEach(error => { %>     
+            <% if (!error.msg.startsWith('Invalid value')) { %>    
+                <li><%- error.msg %></li>
+            <% } %>
+        <% }) %>
+    </ul>
+<% } %>
 
 <!-- Details Display -->
-<%- detail %>                     <!-- EJS with 'unescaped' indicater "-".  Allows HTML to be displayed.  remember detail contains HTML built by the utilities index.js file-->
+<%- detail %> 
 
 
+<%- reviews %>
 
 
-        <%- reviews %>
+<% if (locals.loggedin) { %>
+    <div id="submit-new-review-form-container">
+        <form class="submit-review-form forms" action="/inv/submit-review/<%- inv_id %>" method="post"> 
+            <h2 class="subtitle-centered">Submit a New Review</h2>
+            <div class="submit-review-username field">
+                <label for="username">Screen Name:
+                    <input type="text" id="username" name="username" placeholder="" title="Screen Name" required pattern="^[A-Za-z]+$"  value="<%= username %>" readonly>
+                </label>
+            </div>
+        
+            <div class="submit-review-text field">
+                <label for="review_text">Review:
+                    <textarea id="review_text" name="review_text" placeholder="Submit a review of the vehicle" required minlength="1" rows="4"><%= review_text %></textarea>
+                </label>
+            </div>
+            <button class="submit-review-button button" type="submit">Submit Review</button>
+    
+            <input type="hidden" name="inv_id" value="<%= inv_id %>">
+            
+            <input type="hidden" name="account_id" value="<%=account_id%>">
+    
+        </form>
+    </div>`
+
+<% } else { %>
+    <p>You must <a href="/account/login" title="login">login</a> to write a review.</p>
+<% } %>
+

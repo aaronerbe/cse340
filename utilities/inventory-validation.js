@@ -158,16 +158,7 @@ validate.checkInventoryUpdateData = async (req, res, next) => {
         const nav = await utilities.getNav()
         const itemName = inv_make + " " + inv_model
         const classSelect = await utilities.buildClassificationList(classification_id)
-        req.flash("notice", `New Inventory not submitted.  Invalid Entry  <br>Please correct and resubmit`)
-        //res.redirect("/inv/edit/"+inv_id)
-        //res.render("inventory/edit-inventory/", {
-        //    errors,
-        //    title: "Edit " + itemName ,
-        //    nav,
-        //    classSelect: classSelect,
-        //    inv_id, classification_id, inv_year, inv_make, inv_model, inv_description, inv_image, inv_thumbnail, inv_price, inv_miles, inv_color
-        //})
-        
+        req.flash("notice", `New Inventory not submitted.  Invalid Entry  <br>Please correct and resubmit`)        
         res.render("./inventory/edit-inventory", {
             errors,
             title: "Edit " + itemName, 

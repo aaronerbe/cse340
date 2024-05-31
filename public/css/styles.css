@@ -43,7 +43,7 @@ a{
   margin: 0 auto;
   padding: 2rem;
   /*text-align: center;*/
-  font-size: clamp(1.25rem, 1.5vw, 1.5rem);
+  font-size: clamp(1rem, 1vw, 1.25rem);
   color: var(--notice-color);
   font-weight: 700;
   width: 80%;
@@ -320,41 +320,42 @@ footer a{
   font-size: clamp(1.25rem, 1.5vw, 1.5rem);
 }
 
-/* DETAILS REVIEWS */
-.reviews-container{
-  margin: 3rem auto;
-}
-.inv-reviews{
-  margin: 3rem auto;
-}
-.review-card{
-  max-width: 80%;
-  margin: 1rem 0
-}
-.review-card{
-  padding: .25rem;
+#mgmt-reviews, #inv-reviews{
+  list-style-type: none;
+  padding-left: 0;
   margin: 0;
-  display: flex;
-  justify-content: space-between;
-  padding: 10px;
-  border: 1px solid #ccc;
-  margin-bottom: 10px;
-}
-.review-content {
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
-}
-.review-card-text {
-  flex: 1;
 }
 .review-username{
   font-weight: bold;
 }
-.review-notice{
-  color: var(--notice-color)
+
+.reviews-container {
+  margin: 3rem auto;
 }
-/* SPECIFIC TO REVIEWS on Account MGMT Page */
+
+.review-card {
+  max-width: 80%;
+  margin: 1rem auto;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  list-style: none;
+}
+
+.review-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.review-row p{
+  margin:0.1rem;
+  padding:0;
+}
+
+.mgmt-review-meta {
+  flex: 1;
+}
+
 .review-actions {
   white-space: nowrap;
   display: flex;
@@ -362,15 +363,33 @@ footer a{
   padding-left: 10px;
 }
 
-/* ADD REVIEW FORM */
-#review_text{
+.review-content {
+  margin-top: 10px;
+}
+
+.review-card-text {
+  flex: 1;
+}
+
+.subtitle {
+  text-align: center;
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.no-reviews, .review-notice {
+  text-align: center;
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: var(--notice-color);
+}
+
+#review_text {
   resize: vertical;
   width: 100%;
   border-radius: 4px;
   font-size: 1.25rem;
 }
-
-
 
 /* forms */
 .login-title{
@@ -394,6 +413,11 @@ footer a{
 }
 .forms label{
   font-size: clamp(1rem, 1.5vw, 1.25rem);
+}
+input:read-only, textarea:read-only{
+  
+  background-color:rgb(212, 212, 212);
+  border: 1px solid black
 }
 .add-classification-input{
   display: flex;

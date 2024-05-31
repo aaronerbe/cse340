@@ -4,15 +4,19 @@ const router = new express.Router()                                 //Create new
 const invController = require("../controllers/invController")       //imports the inventory controller into this scope
 const utilities = require("../utilities/") 
 const invValidate = require('../utilities/inventory-validation')
+const reviewValidate = require('../utilities/review-validation')
 
 //+ CLASSIFICATION VIEW
 //inventory by classification id
 router.get("/type/:classificationId", utilities.handleErrors(invController.buildByClassificationId));
 
-//+ INVENTORY VIEW
+//+ INVENTORY VIEW WITH ADD REVIEW FORM
 //inventory detail by inventory id
 router.get("/detail/:inventoryId", utilities.handleErrors(invController.buildByInventoryId));
-router.post("/submit-review/:inventoryId", utilities.handleErrors(invController.postNewReview));
+router.post("/submit-review/:inventoryId", 
+    reviewValidate.reviewRules(),
+    utilities.handleErrors(reviewValidate.checkNewReviewTextData),  
+    utilities.handleErrors(invController.postNewReview));
 
 //+ MANAGE INVENTORY VIEW
 //Manage Inventory View.  

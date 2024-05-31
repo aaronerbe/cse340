@@ -36,40 +36,6 @@ async function getDetailByInventoryId(inventory_id){
   }
 }
 
-//+ REVIEWS MODELS
-/* ***************************
- *  Get reviews by inventory_id
- * ***************************/
-async function getReviewsByInventoryId(inventory_id){  
-  try{
-    const data = await pool.query(
-      `SELECT * FROM review AS r
-      WHERE r.inv_id = $1`,[inventory_id]
-    )
-
-    return data.rows
-  }catch (error){
-    console.error("get reviews by Id Error" + error)
-  }
-}
-
-
-
-
-
-/* ***************************
- *  Add New Review
- * ***************************/
-async function addReview(inv_id, account_id, review_text){
-  try{
-    const sql = "INSERT INTO review (inv_id, account_id, review_text) VALUES ($1, $2, $3) RETURNING *"
-    return await pool.query(sql, [inv_id, account_id, review_text])
-  } catch (error){
-      return error.message
-  }
-}
-
-
 
 //build addClassification model
 /* ***************************
@@ -169,7 +135,7 @@ async function deleteInvModel(inv_id){
   }
 }
 
-module.exports = {getClassifications, getInventoryByClassificationId, getDetailByInventoryId, addClassification, checkExistingClass, addInventory, updateInventory, deleteInvModel, getReviewsByInventoryId, addReview}   //exports these to be used. 
+module.exports = {getClassifications, getInventoryByClassificationId, getDetailByInventoryId, addClassification, checkExistingClass, addInventory, updateInventory}   //exports these to be used. 
 
 
 
