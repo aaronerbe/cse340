@@ -301,6 +301,75 @@ async function buildEditReview(req, res, next, isEdit=true){
 
 }
 
+//+POST EDIT UPDATE
+async function editReview(req, res, next){
+    const nav = await utilities.getNav()
+    const review_id = req.params.review_id
+    const {
+        review_text,
+        account_id,
+    } = req.body
+
+    console.log("review_id: " +review_id)
+    console.log("review_text: "+ review_text)
+    console.log("account_id: " + account_id)
 
 
-module.exports = { buildLogin, buildRegister, registerAccount, accountLogin, buildManagement, updateAccountView, updateAccount, updatePassword, logout, buildEditReview}         //exports the function for use
+    const updateReview = await accountModel.updateReview(
+        review_text,
+        review_id,
+        account_id,
+    )
+    console.table(updateReview)
+
+    if (updateReview){
+        req.flash(
+            "notice",
+            "Review Successfully Update"
+        )
+        console.log("SUCCESSFULL UPDATE")
+        res.redirect(`/account/`)
+    }else{
+        req.flash(
+            "notice",
+            "Failed to update!  Please try again"
+        )
+        res.status(501).redirect(`/account/edit-review/${review_id}`)
+    }
+}
+//+ DELETE REVIEW
+async function deleteReview(req, res, next){
+    const review_id = req.params.review_id;
+    const {
+        review_text,
+        account_id
+    } = req.body;
+
+    console.log("review_id: " + review_id);
+    console.log("review_text: " + review_text);
+    console.log("account_id: " + account_id);
+
+    const deleteResult = await accountModel.deleteReview(
+        review_id,
+        account_id
+    );
+
+    console.table("deleteResult: " + deleteResult)
+
+    if (deleteResult){
+        req.flash(
+            "notice",
+            "Review Successfully Deleted"
+        );
+        res.redirect(`/account/`);
+    } else {
+        req.flash(
+            "notice",
+            "Failed to delete! Check permissions and try again"
+        );
+        res.status(501).redirect(`/account/delete-review/${review_id}`);
+    }
+}
+
+
+module.exports = { buildLogin, buildRegister, registerAccount, accountLogin, buildManagement, updateAccountView, updateAccount, updatePassword, logout, buildEditReview, editReview, deleteReview}         //exports the function for use

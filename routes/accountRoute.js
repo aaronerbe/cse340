@@ -37,14 +37,14 @@ router.get("/edit-review/:review_id",
 router.post("/edit-review/:review_id",
     utilities.handleErrors(utilities.checkLogin),
     utilities.handleErrors(utilities.checkAuthN),
-    utilities.handleErrors(accountController.deleteReview)
+    utilities.handleErrors(accountController.editReview)
 )
-//+ DELTE
+//+ DELETE
 router.get("/delete-review/:review_id",
     utilities.handleErrors(utilities.checkLogin),
     utilities.handleErrors(utilities.checkAuthN),
     utilities.handleErrors((req, res, next) => accountController.buildEditReview(req, res, next, false)))
-router.post("/delete-review/review_id",
+router.post("/delete-review/:review_id",
     utilities.handleErrors(utilities.checkLogin),
     utilities.handleErrors(utilities.checkAuthN),
     utilities.handleErrors(accountController.deleteReview)
