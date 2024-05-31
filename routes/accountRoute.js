@@ -24,6 +24,33 @@ router.get("/",
     utilities.handleErrors(utilities.checkJWTToken),
     utilities.handleErrors(accountController.buildManagement))
 
+//+ Routes for Edit and Delete Reviews from Management Page
+//+ EDIT
+//todo need to build controllers for all of these
+//todo not sure checklogin and check authn are required
+//todo need to add validation to these
+router.get("/edit-review/:review_id",
+    utilities.handleErrors(utilities.checkLogin),
+    utilities.handleErrors(utilities.checkAuthN),
+    utilities.handleErrors((req, res, next) => accountController.buildEditReview(req, res, next, true))
+)
+router.post("/edit-review/:review_id",
+    utilities.handleErrors(utilities.checkLogin),
+    utilities.handleErrors(utilities.checkAuthN),
+    utilities.handleErrors(accountController.deleteReview)
+)
+//+ DELTE
+router.get("/delete-review/:review_id",
+    utilities.handleErrors(utilities.checkLogin),
+    utilities.handleErrors(utilities.checkAuthN),
+    utilities.handleErrors((req, res, next) => accountController.buildEditReview(req, res, next, false)))
+router.post("/delete-review/review_id",
+    utilities.handleErrors(utilities.checkLogin),
+    utilities.handleErrors(utilities.checkAuthN),
+    utilities.handleErrors(accountController.deleteReview)
+)
+
+
 
 //Route for registration view
 router.get("/register/", utilities.handleErrors(accountController.buildRegister))

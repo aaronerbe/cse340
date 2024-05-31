@@ -6,12 +6,18 @@
 } %>                            <!-- redirects the response object to the default index route, to deliver the home view -->
 
 <!-- Message -->
-<%# messages() %>
+<%- messages() %>
 
-<!-- Details Display -->
-<%- detail %>                     <!-- EJS with 'unescaped' indicater "-".  Allows HTML to be displayed.  remember detail contains HTML built by the utilities index.js file-->
+<% if (errors) { %>             
+    <ul class="notice">         
+        <% errors.array().forEach(error => { %>     
+            <% if (!error.msg.startsWith('Invalid value')) { %>    
+                <li><%- error.msg %></li>
+            <% } %>
+        <% }) %>
+    </ul>
+<% } %>
 
+<!-- Render display -->
 
-
-
-        <%- reviews %>
+<%- reviewDetails %>

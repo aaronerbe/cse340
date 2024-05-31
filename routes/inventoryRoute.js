@@ -12,7 +12,7 @@ router.get("/type/:classificationId", utilities.handleErrors(invController.build
 //+ INVENTORY VIEW
 //inventory detail by inventory id
 router.get("/detail/:inventoryId", utilities.handleErrors(invController.buildByInventoryId));
-
+router.post("/submit-review/:inventoryId", utilities.handleErrors(invController.postNewReview));
 
 //+ MANAGE INVENTORY VIEW
 //Manage Inventory View.  

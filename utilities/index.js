@@ -103,49 +103,47 @@ Util.buildClassificationDetail = async function(data){
     return detail
 }
 
-Util.buildInventoryDetailReviews = async function(reviewData, loggedin, fName, lName){
+Util.buildInventoryDetailReviews = async function(reviewData, loggedin, fName, lName, inventory_id, account_id) {
     let reviewList = ''  // Initialize reviewList as an empty string
-        reviewList = '<div class = "inv-reviews-container reviews-container">'
-            reviewList += '<h2 class="subtitle">Customer Reviews</h2>'
-    if (reviewData.length > 0){
-            reviewList += '<ul id="inv-reviews">'
+    reviewList = '<div class="inv-reviews-container reviews-container">'
+    reviewList += '<h2 class="subtitle">Customer Reviews</h2>'
+    if (reviewData.length > 0) {
+        reviewList += '<ul id="inv-reviews">'
+        for (const review of reviewData) {
+            try {
+                // Fetch account data to build username below
+                const accountData = await accountModel.getAccountByID(review.account_id)
+                const fname = accountData.account_firstname
+                const lname = accountData.account_lastname
+                const username = fname[0] + lname
 
-            for (const review of reviewData) {
-                try {
-                    // Fetch account data to build username below
-                    const accountData = await accountModel.getAccountByID(review.account_id)
-                    const fname = accountData.account_firstname
-                    const lname = accountData.account_lastname
-                    const username = fname[0]+lname
+                reviewList += '<li>'
+                reviewList += '<div class="inv-review-card review-card">'
+                reviewList += '<div class="review-content">'
+                
+                reviewList += '<div class="inv-review-card-text review-card-text">'
+                reviewList += `<p><span class="review-username">${username}</span> wrote on ${new Date(review.review_date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>`
+                reviewList += '<p>' + review.review_text + '</p>'
+                reviewList += '</div>'
 
-                    reviewList += '<li>'
-                        reviewList += '<div class="inv-review-card review-card">'
-
-                            reviewList += '<div class="inv-review-card-header review-card-header">'
-                            //todo format review date
-                                reviewList += `<p><span class="review-username">${username}</span> wrote on ${new Date(review.review_date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>`
-                            reviewList += '</div>'
-                        
-                            reviewList += '<div class="inv-review-card-text review-card-text">'
-                                reviewList += '<p>' + review.review_text + '</p>'
-                            reviewList += '</div>'
-                        
-                        reviewList += '</div>'
-                    reviewList += '</li>'
-                } catch (error) {
-                    console.error(`Error fetching account data for account ID ${review.account_id}:`, error)
-                }
+                reviewList += '</div>'
+                reviewList += '</div>'
+                reviewList += '</li>'
+            } catch (error) {
+                console.error(`Error fetching account data for account ID ${review.account_id}:`, error)
             }
-            reviewList += '</ul>'
-        } else {
-            reviewList += '<p class="review-notice">Be the first to review this vehicle</p>'
         }
+        reviewList += '</ul>'
+    } else {
+        reviewList += '<p class="review-notice">Be the first to review this vehicle</p>'
+    }
     reviewList += '</div>'
-    reviewList += await Util.buildSubmitReviewForm(loggedin, fName, lName)
+    reviewList += await Util.buildSubmitReviewForm(loggedin, fName, lName, inventory_id, account_id)
     return reviewList
 }
 
-Util.buildSubmitReviewForm = async function(loggedin, fName, lName){
+
+Util.buildSubmitReviewForm = async function(loggedin, fName, lName, inventory_id, account_id){
     let form = ''
     if(loggedin){
         const username = fName[0]+lName
@@ -153,20 +151,25 @@ Util.buildSubmitReviewForm = async function(loggedin, fName, lName){
         form = `
             
             <div id="submit-new-review-form-container">
-                <form class="submit-review-form forms" action="/inv/submit-review" method="post"> 
+                <form class="submit-review-form forms" action="/inv/submit-review/${inventory_id}" method="post"> 
                     <h2 class="subtitle-centered">Submit a New Review</h2>
                     <div class="submit-review-username field">
-                        <label for="submit-review_username">Screen Name:
-                            <input type="text" id="submit-review_username" name="submit-review_username" placeholder="" title="Screen Name" required pattern="^[A-Za-z]+$"  value="${username}" readonly>
+                        <label for="username">Screen Name:
+                            <input type="text" id="username" name="username" placeholder="" title="Screen Name" required pattern="^[A-Za-z]+$"  value="${username}" readonly>
                         </label>
                     </div>
                 
                     <div class="submit-review-text field">
-                        <label for="submit-review-text">Review:
-                            <textarea id="submit-review-text" name="submit-review-text" placeholder="Submit a review of the vehicle" required minlength="1" rows="4"></textarea>
+                        <label for="review_text">Review:
+                            <textarea id="review_text" name="review_text" placeholder="Submit a review of the vehicle" required minlength="1" rows="4"></textarea>
                         </label>
                     </div>
                     <button class="submit-review-button button" type="submit">Submit Review</button>
+
+                    <input type="hidden" name="inv_id" value="${inventory_id}">
+                    
+                    <input type="hidden" name="account_id" value="${account_id}">
+
                 </form>
             </div>`
 
@@ -179,6 +182,7 @@ Util.buildSubmitReviewForm = async function(loggedin, fName, lName){
     return form
 
 }
+
 
 /* **************************************
 * Build the Management view HTML for inv/
@@ -193,6 +197,84 @@ Util.buildManagementDetail = async function(data){
         links += addVehicleLink
     links += '</div>'
     return links
+}
+
+//+ Build Review List by User
+
+Util.buildUserReviewList = async function(reviewData) {
+    let reviewList = '' 
+    reviewList = '<div class="mgmt-reviews-container reviews-container">'
+    reviewList += '<h2 class="subtitle">My Reviews</h2>'
+    if (reviewData.length > 0) {
+        reviewList += '<ol id="mgmt-reviews">'
+        for (const review of reviewData) {
+            reviewList += '<li>'
+            reviewList += '<div class="mgmt-review-card review-card">'
+            reviewList += '<div class="review-content">'
+            reviewList += '<div class="mgmt-review-card-text review-card-text">'
+            reviewList += `<p>${review.review_text} on ${new Date(review.review_date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>`
+            reviewList += '</div>'
+            reviewList += '<div class="review-actions">'
+            reviewList += `<a href="/account/edit-review/${review.review_id}">EDIT</a>&nbsp; | &nbsp;<a href="/account/delete-review/${review.review_id}">DELETE</a>`
+            reviewList += '</div>'
+            reviewList += '</div>'
+            reviewList += '</div>'
+            reviewList += '</li>'
+        }
+        reviewList += '</ol>'
+    } else {
+        reviewList += '<p class="no-reviews">No Reviews Yet</p>'
+    }
+    reviewList += '</div>'
+    return reviewList
+}
+
+//+ Build Edit/Delete Form 
+Util.buildEditReviewForm = async function(isEdit, review_id, review_date, review_text, account_id, inv_id){
+    //todo build this form
+    let form = ''
+    let action = ""
+    let label = ""
+    let readonly = ""
+    const date = new Date(review_date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+    //! isEdit = true means edit form view.  Else delete form view
+    if(isEdit){
+        action = `/account/edit-review/${review_id}`
+        label = "Edit"
+        readonly = ""
+    }else{
+        action = `/account/delete-review/${review_id}`
+        label = "Delete"
+        readonly = "readonly"
+    }
+
+        //todo handle submission of form
+    form = `
+        
+        <div id="${label}-review-form-container">
+            <form class="${label}-review-form forms" action="${action}" method="post"> 
+                <h2 class="subtitle-centered">${label} Review</h2>
+                <div class="${label}-review-date field">
+                    <label for="date">Date:
+                        <input type="text" id="date" name="date" placeholder="" title="Date" required value="${date}" readonly>
+                    </label>
+                </div>
+            
+                <div class="${label}-review-text field">
+                    <label for="review_text">Review:
+                        <textarea id="review_text" name="review_text" placeholder="" required minlength="1" rows="4" ${readonly}>${review_text}</textarea>
+                    </label>
+                </div>
+                <button class="${label}-review-button button" type="submit">${label} Review</button>
+
+                <input type="hidden" name="inv_id" value="${inv_id}">
+                
+                <input type="hidden" name="account_id" value="${account_id}">
+
+            </form>
+        </div>`
+    return form
+
 }
 
 /* **************************************
@@ -280,6 +362,7 @@ Util.checkJWTToken = (req, res, next) => {
         res.locals.fName = ""
         res.locals.lName = ""
         res.locals.accountType = ""
+        res.locals.accountId = ""
         next()
     }
 }

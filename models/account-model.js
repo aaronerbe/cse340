@@ -104,5 +104,39 @@ async function updatePassword (
     }
 }
 
+//+ REviews on Management Page
+/* ***************************
+ *  Get reviews by account_id
+ * ***************************/
+async function getReviewsByAccountId(account_id){  
+    try{
+    const data = await pool.query(
+        `SELECT * FROM review AS r
+        WHERE r.account_id = $1`,[account_id]
+    )
 
-module.exports = {registerAccount, checkExistingEmail, getAccountByEmail, getAccountByID, updateAccount, updatePassword}      
+    return data.rows
+    }catch (error){
+    console.error("get reviews by Id Error" + error)
+    }
+}
+
+//+ EDIT REVIEW
+/* ***************************
+ *  Get reviews by account_id
+ * ***************************/
+async function getReviewByReviewId(review_id){  
+    try{
+    const data = await pool.query(
+        `SELECT * FROM review AS r
+        WHERE r.review_id = $1`,[review_id]
+    )
+    return data.rows[0]
+    }catch (error){
+    console.error("get review by Id Error" + error)
+    }
+}
+
+
+
+module.exports = {registerAccount, checkExistingEmail, getAccountByEmail, getAccountByID, updateAccount, updatePassword, getReviewsByAccountId, getReviewByReviewId}      

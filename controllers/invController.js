@@ -37,14 +37,12 @@ invCont.buildByInventoryId = async function (req, res, next) {
     
     //builds requests command that will be sent to the model.  req object that is sent.  params is an express function that represents the data that was passed in from the client.
     const inventory_id = req.params.inventoryId
+    const account_id = res.locals.accountId
     const data = await invModel.getDetailByInventoryId(inventory_id)             //calls getInventoryByInventoryId from model.  sends it the above request object
     const detail = await utilities.buildClassificationDetail(data)                  //utility function to build the details based on Data array.  Will contian html string
-    //! get review data
+    //+ get & build review data
     const reviewData = await invModel.getReviewsByInventoryId(inventory_id)
-    const reviews = await utilities.buildInventoryDetailReviews(reviewData, res.locals.loggedin, res.locals.fName, res.locals.lName)
-
-    console.log('logged in state: ' + res.locals.loggedin)
-
+    const reviews = await utilities.buildInventoryDetailReviews(reviewData, res.locals.loggedin, res.locals.fName, res.locals.lName, inventory_id, account_id)
 
     let nav = await utilities.getNav()                                              //calls our util to build the nav bar for the page
     const year = data[0].inv_year                                                //extracts the inventory year
@@ -58,6 +56,36 @@ invCont.buildByInventoryId = async function (req, res, next) {
         reviews,
         errors: null
     })
+}
+/* ***************************
+ *  POST New Review
+ * ***************************/
+invCont.postNewReview = async function (req, res, next){
+    //let nav = await utilities.getNav()
+    const {  
+        inv_id,
+        account_id,
+        username,
+        review_text,
+        } = req.body
+    //const classSelect = await utilities.buildClassificationList()
+    //run model function passing in the variables
+    const addResult = await invModel.addReview(
+        inv_id,
+        account_id,
+        review_text,
+    )
+    
+    if (addResult){
+        req.flash(
+            "notice",
+            `Thank you for your review!`
+        )
+        res.redirect(`/inv/detail/${inv_id}`)
+    }else{
+        req.flash("notice", `Review not submit.  Please try again`)
+        res.status(501).redirect(`/inv/detail/${inv_id}`)
+    }
 }
 
 //+ MANAGEMENT VIEW
@@ -181,15 +209,6 @@ invCont.updateInventory = async function (req,res,next){
         const classSelect = await utilities.buildClassificationList(classification_id)
         req.flash("notice", `${itemName} not updated.  Invalid Entry  <br>Please correct and resubmit`)
         res.status(501).redirect(`/inv/edit/${inv_id}`)
-
-        //res.status(501).render(`inventory/edit/${inv_id}`, {
-        //res.status(501).render("inventory/edit-inventory"),{
-        //    title: "Edit " + itemName ,
-        //    nav,
-        //    classSelect: classSelect,
-        //    inv_id, classification_id, inv_year, inv_make, inv_model, inv_description, inv_image, inv_thumbnail, inv_price, inv_miles, inv_color,
-        //    errors: null
-        //}
     }
 }
 

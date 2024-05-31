@@ -128,9 +128,14 @@ async function accountLogin(req, res) {
 * *************************************** */
 async function buildManagement(req, res, next) {     
     let nav = await utilities.getNav()         
+    const account_id = res.locals.accountId
+    const reviewData = await accountModel.getReviewsByAccountId(account_id)
+    const reviews = await utilities.buildUserReviewList(reviewData)
+
     res.render("account/management", {
         title: "Account Management",
         nav,
+        reviews,
         errors: null
     })
 }
@@ -254,4 +259,48 @@ async function logout(req, res, next){
     res.redirect("/")
 }
 
-module.exports = { buildLogin, buildRegister, registerAccount, accountLogin, buildManagement, updateAccountView, updateAccount, updatePassword, logout}         //exports the function for use
+/* ****************************************
+*  REVIEW EDIT/DELETE
+* *************************************** */
+//+EDIT
+async function buildEditReview(req, res, next, isEdit=true){
+    //todo copied from inventory build update inv
+    //todo need to get inv_id.
+    //! note isEdit determines if this is for an Edit or Delete view
+    const nav = await utilities.getNav()
+    const review_id = parseInt(req.params.review_id)
+    let data = await accountModel.getReviewByReviewId(review_id)
+    const review_text = data.review_text
+    const review_date = data.review_date
+    const account_id = data.account_id
+    const inv_id = data.inv_id
+    const userId = res.locals.accountId
+
+    if (account_id === userId){  //double check the user is the owner of the review
+        const reviewDetails = await utilities.buildEditReviewForm(
+            isEdit, 
+            review_id, 
+            review_date, 
+            review_text, 
+            account_id, 
+            inv_id)  //send isEdit boolean
+        
+        //todo customize the title for the action edit or delete...
+        res.render("./account/edit-review",{
+            title: "Edit Review",
+            nav,
+            reviewDetails,
+            errors: null,
+    })
+
+    }else{
+        req.flash("notice", "Insufficient perimissions to edit this review")
+        res.redirect("/account/")
+    }
+
+
+}
+
+
+
+module.exports = { buildLogin, buildRegister, registerAccount, accountLogin, buildManagement, updateAccountView, updateAccount, updatePassword, logout, buildEditReview}         //exports the function for use

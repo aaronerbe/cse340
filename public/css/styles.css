@@ -331,12 +331,22 @@ footer a{
   max-width: 80%;
   margin: 1rem 0
 }
-.review-card p{
+.review-card{
   padding: .25rem;
   margin: 0;
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+  border: 1px solid #ccc;
+  margin-bottom: 10px;
 }
-.review-card-header{
-  border-bottom: solid 2px black; 
+.review-content {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+.review-card-text {
+  flex: 1;
 }
 .review-username{
   font-weight: bold;
@@ -344,11 +354,22 @@ footer a{
 .review-notice{
   color: var(--notice-color)
 }
-#submit-review-text{
+/* SPECIFIC TO REVIEWS on Account MGMT Page */
+.review-actions {
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  padding-left: 10px;
+}
+
+/* ADD REVIEW FORM */
+#review_text{
   resize: vertical;
   width: 100%;
   border-radius: 4px;
+  font-size: 1.25rem;
 }
+
 
 
 /* forms */
