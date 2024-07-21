@@ -1,4 +1,4 @@
-## Final Project Info
+# Final Project Info
 Core Frontend Design given.  Course is building backend services + views for various services (login forms, account management forms, classification forms, enventory forms, reviews forms)
 Validation + Error Handling for all routes
 Used render.com to serve
@@ -6,32 +6,32 @@ Node.js, express, jwt, postgresql,
 
 localhost:5500
 
-### Routes:
-####Account
-    #####GET /login  (Create New Account View)
-    #####GET /edit-review/:review_id  (Route to Post the login attempt for /login)
-    #####GET /  (Default view for successful login (account management view)  /managmeent
-    #####POST /edit-review/:review_id  (Post edit Review)
-    #####GET /delete-review/:review_id  (Get Delete Review View)
-    #####POST /delete-review/:review_id  (Post delete review)
-    #####GET /register/   (Get registration view)
-    #####POST /register/   (post registration) 
-    #####GET /update/:account_id  (Get update account view)
-    #####POST /update-account/:account-id  (Post Update account form)
-    #####POST /update-password/:account_id  (Post update password form)
+## Routes:
+###Account
+    -GET /login  (Create New Account View)
+    -GET /edit-review/:review_id  (Route to Post the login attempt for /login)
+    -GET /  (Default view for successful login (account management view)  /managmeent
+    -POST /edit-review/:review_id  (Post edit Review)
+    -GET /delete-review/:review_id  (Get Delete Review View)
+    -POST /delete-review/:review_id  (Post delete review)
+    -GET /register/   (Get registration view)
+    -POST /register/   (post registration) 
+    -GET /update/:account_id  (Get update account view)
+    -POST /update-account/:account-id  (Post Update account form)
+    -POST /update-password/:account_id  (Post update password form)
     
-####Inventory
-    #####GET detail/:inventoryId  (Classification View)
-    #####POST submit-review/:inventoryId  (Inventory View With Add Review Form)
-    #####GET /  (Manage Inventory View)
-    #####GET /getInventory/:classification_id (Display (list) inventory based on category)
-    #####GET /edit/:inventory_id  (Modify inventory from management Table)
-    #####POST /update  (Post Update to inventory)
-    #####GET /delete/:inventory_id  (DELETE inventory)
-    #####GET /add-classification  (add classification view)
-    #####POST /add-classification (Post new classification)
-    #####GET /add-invenotry  (add new inventory view)
-    #####POST /add-inventory  (Post new vehicle to inventory)
+###Inventory
+    -GET detail/:inventoryId  (Classification View)
+    -POST submit-review/:inventoryId  (Inventory View With Add Review Form)
+    -GET /  (Manage Inventory View)
+    -GET /getInventory/:classification_id (Display (list) inventory based on category)
+    -GET /edit/:inventory_id  (Modify inventory from management Table)
+    -POST /update  (Post Update to inventory)
+    -GET /delete/:inventory_id  (DELETE inventory)
+    -GET /add-classification  (add classification view)
+    -POST /add-classification (Post new classification)
+    -GET /add-invenotry  (add new inventory view)
+    -POST /add-inventory  (Post new vehicle to inventory)
 
 
 
@@ -39,7 +39,7 @@ localhost:5500
 
 
 
-#########################################################################################################
+---------------------
 ## Getting Started
 
 This document is intended to get you started quickly in building a backend driven Node.js application complete with pages and content, backend logic and a PostgreSQL database for data storage.
